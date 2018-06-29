@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="?gdpr_informationStyle">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingTop="24dp">
+
+            <TextView
+                style="?android:textAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="?android:listPreferredItemPaddingEnd"
+                android:paddingStart="?android:listPreferredItemPaddingStart"
+                android:text="@string/gdpr_sdk__service_disabled_description" />
+
+            <TextView
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:paddingEnd="?android:listPreferredItemPaddingEnd"
+                android:paddingStart="?android:listPreferredItemPaddingStart"
+                android:text="@string/gdpr_sdk__service_enabled_sectionheader" />
+
+            <at.allaboutapps.gdpr.widget.ServicesView
+                android:id="@+id/service_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="8dp"
+                android:divider="?android:dividerHorizontal"
+                android:orientation="vertical"
+                android:paddingEnd="?android:listPreferredItemPaddingEnd"
+                android:paddingStart="?android:listPreferredItemPaddingStart"
+                android:showDividers="middle|end" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="?gdpr_buttonMarginBottom">
+
+        <Button
+            android:id="@+id/action_enable_services"
+            style="?android:actionButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/gdpr_sdk__service_enable" />
+
+    </LinearLayout>
+
+</LinearLayout>

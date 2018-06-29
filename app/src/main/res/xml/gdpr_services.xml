@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<services>
+    <service name="@string/service_analytics" />
+
+    <service name="@string/service_firebase">
+        <!-- You can optionally define some bindings if you provide your own layout -->
+        <bind id="@android:id/text2">Description</bind>
+    </service>
+</services>

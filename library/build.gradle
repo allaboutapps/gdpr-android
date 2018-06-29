@@ -1,0 +1,119 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+    id "com.github.dcendents.android-maven" version "2.1"
+}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka-android'
+
+group = 'at.allaboutapps.gdpr'
+version = '0.0.1'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    testImplementation 'junit:junit:4.12'
+
+    implementation "at.allaboutapps.web:a3webview:0.1.0"
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
+}
+
+bintray {
+    user = 'allaboutapps'
+    // read pw from secure travis.yml
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'A3-Android'
+        name = "$project.group.$archivesBaseName"
+
+        version {
+            name = project.version
+            desc = ''
+            vcsTag = System.getenv('TRAVIS_TAG')
+        }
+
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/allaboutapps/gdpr-android'
+        websiteUrl = 'http://www.allaboutapps.at'
+    }
+    configurations = ['archives']
+}
+
+task javadoc(type: Javadoc) {
+    excludes = ['**/*.kt'] // Exclude all kotlin files from javadoc file.
+}
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = javadoc.destinationDir
+}
+
+task generateJavadocsJar(type: Jar, dependsOn: dokka) {
+    classifier = 'javadoc'
+    from dokka.outputDirectory
+}
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+task generateJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath()
+            .join(File.pathSeparator))
+}
+
+artifacts {
+    archives generateSourcesJar, generateJavadocsJar
+}
+
+android {
+    lintOptions {
+        abortOnError false
+    }
+}
+
+task updateStrings(type: Exec, group: "localization") {
+    def executableName
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        executableName = ["cmd", '/c', "google-docs-i18n-strings"]
+    } else {
+        executableName = ["google-docs-i18n-strings"]
+    }
+
+    commandLine = (executableName + [
+            "-a", "src/main/res/values",
+            "-p", "android",
+            "-s", "1s_VGO47jYc7kH2RQ5M475G5Eazwt-OPhyghmckEh3mI"
+    ])
+}

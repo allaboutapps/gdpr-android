@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#ffaa22</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">#229933</item>
+        <item name="gdpr_PolicyTheme">@style/GDPR</item>
+    </style>
+
+    <style name="GDPR" parent="Base.GDPRPolicyStyle">
+        <item name="android:actionButtonStyle">@style/WideButton</item>
+        <!--<item name="gdpr_itemLayout">@layout/gdpr_item_service</item>-->
+        <!--<item name="gdpr_errorLayout">@layout/error</item>-->
+    </style>
+
+    <style name="WideButton">
+        <item name="android:background">?colorPrimary</item>
+    </style>
+
+</resources>
