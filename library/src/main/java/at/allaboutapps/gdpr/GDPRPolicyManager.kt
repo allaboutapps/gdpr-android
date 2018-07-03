@@ -182,6 +182,7 @@ class GDPRPolicyManager private constructor(
     fun initialize(context: Context): GDPRPolicyManager {
       if (instance == null) {
         instance = GDPRPolicyManager(context.applicationContext)
+        GdprSettingsProvider.initialize(context)
       }
       return instance()
     }

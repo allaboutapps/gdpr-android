@@ -179,8 +179,15 @@ class GdprSettingsProvider : ContentProvider() {
     lateinit var BASE_URI: Uri
 
     private lateinit var matcher: UriMatcher
+    private var isInitialized = false
 
-    private fun initialize(context: Context) {
+    internal fun initialize(context: Context) {
+      if (isInitialized) {
+        // initializing once is enough
+        return
+      }
+      isInitialized = true
+
       val componentName = ComponentName(context.packageName, GdprSettingsProvider::class.java.name)
       val info = context.packageManager.getProviderInfo(componentName, 0)
       AUTHORITY = info.authority
