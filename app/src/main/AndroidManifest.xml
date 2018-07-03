@@ -20,9 +20,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".ServicesBroadcastReceiver">
+        <receiver
+                android:name=".ServicesBroadcastReceiver"
+                android:exported="false">
             <intent-filter>
                 <action android:name="at.allaboutapps.gdpr.SERVICES_CHANGED" />
+                <action android:name="at.allaboutapps.gdpr.POLICY_ACCEPTED" />
             </intent-filter>
         </receiver>
     </application>
