@@ -57,6 +57,8 @@ open class PolicyUpdateDialogFragment : DialogFragment() {
     private const val TAG = "${BuildConfig.APPLICATION_ID}.GDPR_DIALOG"
     private const val ARG_STYLE = "${BuildConfig.APPLICATION_ID}.style"
 
+    @JvmStatic
+    @JvmOverloads
     fun newInstance(@StyleRes style: Int = 0) = PolicyUpdateDialogFragment().addArguments(style)
 
     fun <T : PolicyUpdateDialogFragment> T.addArguments(@StyleRes style: Int = 0): T = this.apply {
