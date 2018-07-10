@@ -26,6 +26,19 @@ Next create a `services.xml` in your `values/xml` directory.
         </service>
     </services>
 
+Finally, add the theme to your AppTheme that this library should use. It has reasonable defaults, but most properties can be overridden.
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- ... other code ... -->
+
+        <item name="gdpr_PolicyTheme">@style/GDPR</item>
+    </style>
+
 ## Usage
 
 ### Registration
@@ -48,15 +61,41 @@ After the login or acceptance it is _your responsibility_ to update the latest s
     GDPRPolicyManager.instance().setPolicyAccepted(true) // if local, uses current timestamp
     GDPRPolicyManager.instance().setPolicyAccepted(timestamp) // queried from server
 
-### Policy Changes
+### Policy changes
 
 You should query your server about changes to the policy. Call `manager.updateLatestPolicyTimestamp(timestamp)` to update the cached data. You could do this at every app start, or from a background job.
+
+#### Notify the user
 
 In your Activity you can use `manager.shouldShowPolicy()` to check the current status and display a dialog.
 You can extend `PolicyUpdateDialogFragment` if you need some further customizations on the dialog design.
 
-    if (manager.shouldShowPolicy()) {
-      // show dialog to accept / read
-      PolicyUpdateDialogFragment.newInstance()
-        .show(supportFragmentManager)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // ... other code
+
+        if (GDPRPolicyManager.instance().shouldShowPolicy()) {
+            PolicyUpdateDialogFragment.newInstance().show(getSupportFragmentManager());
+        }
     }
+
+#### Send updated to the server
+
+The library will send broadcasts when the user
+
+1. accepts the policy, either from calling `setPolicyAccepted` or when the user accepts the new policy from the dialog
+2. the user enabled or disabled additional services
+
+`GdprServiceIntent.ACTION_POLICY_ACCEPTED` and `GdprServiceIntent.ACTION_SERVICES_CHANGED` will be sent respectively to any receivers registered in the app.
+
+    <receiver
+            android:name=".ServicesBroadcastReceiver"
+            android:exported="false">
+        <intent-filter>
+            <action android:name="at.allaboutapps.gdpr.SERVICES_CHANGED" />
+            <action android:name="at.allaboutapps.gdpr.POLICY_ACCEPTED" />
+        </intent-filter>
+    </receiver>
+
+In this receiver you should send or queue the updates to the server.
