@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.app.AppCompatActivity
@@ -25,6 +26,7 @@ class PolicyActivity : AppCompatActivity() {
   private var colorAccent = 0
   private var colorWarning = 0
 
+  private var isOptInScreen: Boolean = false
   private lateinit var policyUrl: String
 
   private lateinit var tintHelper: NavigationIconTintHelper
@@ -43,7 +45,8 @@ class PolicyActivity : AppCompatActivity() {
     colorAccent = typedValue.loadAttr(styledTheme, R.attr.colorAccent).data
     colorWarning = typedValue.loadAttr(styledTheme, R.attr.gdpr_colorWarning).data
 
-    supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    isOptInScreen = intent.getBooleanExtra(EXTRA_OPT_IN, false)
+    supportActionBar!!.setDisplayHomeAsUpEnabled(!isOptInScreen)
 
     tintHelper = NavigationIconTintHelper(supportActionBar!!, styledContext)
 
@@ -54,8 +57,16 @@ class PolicyActivity : AppCompatActivity() {
 
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()
-        .replace(android.R.id.content, PolicyFragment.newInstance(policyUrl))
+              .replace(android.R.id.content, resolveStartFragment())
         .commit()
+    }
+  }
+
+  private fun resolveStartFragment(): Fragment {
+    return if (isOptInScreen) {
+      StandaloneOptInFragment.newInstance(servicesResId)
+    } else {
+      PolicyFragment.newInstance(policyUrl)
     }
   }
 
@@ -117,6 +128,10 @@ class PolicyActivity : AppCompatActivity() {
   fun onDisableServicesClicked() {
     gdprManager.servicesEnabled = false
 
+    if (isOptInScreen) {
+      finish()
+      return
+    }
     onShowOptOutSettingsSelected()
   }
 
@@ -126,6 +141,11 @@ class PolicyActivity : AppCompatActivity() {
 
   fun onEnableServicesClicked() {
     gdprManager.servicesEnabled = true
+
+    if (isOptInScreen) {
+      finish()
+      return
+    }
 
     addSettingsFragment(InformationFragment.newInstance(servicesResId))
   }
@@ -184,6 +204,7 @@ class PolicyActivity : AppCompatActivity() {
   companion object {
     private const val TAG_SETTINGS = "settings"
     private const val EXTRA_URL = "url"
+    private const val EXTRA_OPT_IN = "opt_in"
 
     @JvmStatic
     @JvmOverloads
@@ -191,6 +212,10 @@ class PolicyActivity : AppCompatActivity() {
       Intent(context, PolicyActivity::class.java).apply {
         putExtra(EXTRA_URL, policyUrl)
       }
+
+    fun newOptInIntent(context: Context, policyUrl: String? = null): Intent =
+            newIntent(context, policyUrl)
+                    .putExtra(EXTRA_OPT_IN, true)
   }
 
 }
