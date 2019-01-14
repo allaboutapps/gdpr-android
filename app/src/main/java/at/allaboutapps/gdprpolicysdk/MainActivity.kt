@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
 
     policySwitch.checkedChangeListener = CompoundButton.OnCheckedChangeListener { _, checked ->
     }
+
+    startActivity(GDPRPolicyManager.instance().getOptInIntent())
   }
 
   override fun onStart() {

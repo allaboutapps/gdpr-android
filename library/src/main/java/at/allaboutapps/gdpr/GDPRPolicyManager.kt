@@ -67,6 +67,13 @@ class GDPRPolicyManager private constructor(
   }
 
   /**
+   * @return An Intent for the opt-in screen to display at the first app start.
+   */
+  fun getOptInIntent(): Intent {
+    return PolicyActivity.newOptInIntent(context, policyUrl)
+  }
+
+  /**
    * Set the timestamp of the latest policy update. When this date is after the time the user last accepted the policy
    * [shouldShowPolicy] will return true.
    */

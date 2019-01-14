@@ -111,7 +111,7 @@ task updateStrings(type: Exec, group: "localization") {
     }
 
     commandLine = (executableName + [
-            "-a", "src/main/res/values",
+            "-a", "src/main/res",
             "-p", "android",
             "-s", "1s_VGO47jYc7kH2RQ5M475G5Eazwt-OPhyghmckEh3mI"
     ])
