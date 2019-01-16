@@ -1,5 +1,6 @@
 package at.allaboutapps.gdpr
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -64,7 +65,9 @@ class PolicyActivity : AppCompatActivity() {
 
   private fun resolveStartFragment(): Fragment {
     return if (isOptInScreen) {
-      StandaloneOptInFragment.newInstance(servicesResId)
+      val confirmButtonAtTop = intent.getBooleanExtra(EXTRA_CONFIRM_BUTTON_AT_TOP, false)
+
+      StandaloneOptInFragment.newInstance(servicesResId, confirmButtonAtTop)
     } else {
       PolicyFragment.newInstance(policyUrl)
     }
@@ -129,6 +132,7 @@ class PolicyActivity : AppCompatActivity() {
     gdprManager.servicesEnabled = false
 
     if (isOptInScreen) {
+      setResult(Activity.RESULT_OK)
       finish()
       return
     }
@@ -136,6 +140,7 @@ class PolicyActivity : AppCompatActivity() {
   }
 
   fun onCloseClicked() {
+    setResult(Activity.RESULT_CANCELED)
     finish()
   }
 
@@ -143,6 +148,7 @@ class PolicyActivity : AppCompatActivity() {
     gdprManager.servicesEnabled = true
 
     if (isOptInScreen) {
+      setResult(Activity.RESULT_OK)
       finish()
       return
     }
@@ -205,6 +211,7 @@ class PolicyActivity : AppCompatActivity() {
     private const val TAG_SETTINGS = "settings"
     private const val EXTRA_URL = "url"
     private const val EXTRA_OPT_IN = "opt_in"
+    private const val EXTRA_CONFIRM_BUTTON_AT_TOP = "confirm_button_at_top"
 
     @JvmStatic
     @JvmOverloads
@@ -213,9 +220,10 @@ class PolicyActivity : AppCompatActivity() {
         putExtra(EXTRA_URL, policyUrl)
       }
 
-    fun newOptInIntent(context: Context, policyUrl: String? = null): Intent =
-            newIntent(context, policyUrl)
-                    .putExtra(EXTRA_OPT_IN, true)
+    fun newOptInIntent(context: Context, policyUrl: String? = null, confirmButtonAtTop: Boolean? = false): Intent =
+      newIntent(context, policyUrl)
+          .putExtra(EXTRA_OPT_IN, true)
+          .putExtra(EXTRA_CONFIRM_BUTTON_AT_TOP, confirmButtonAtTop)
   }
 
 }

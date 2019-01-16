@@ -15,7 +15,20 @@ class StandaloneOptInFragment : BasePolicyFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return styledInflater().inflate(R.layout.gdpr_policy_fragment_opt_in_standalone, container, false)
+    val view = styledInflater().inflate(R.layout.gdpr_policy_fragment_opt_in_standalone, container, false)
+    val consentButtonAtTop = arguments?.getBoolean(ARG_CONFIRM_BUTTON_AT_TOP) ?: false
+
+    if (consentButtonAtTop) {
+      val declineButton = view.findViewById<View>(R.id.action_disable_services)
+      val consentButton = view.findViewById<View>(R.id.action_enable_services)
+      val buttonParent = consentButton.parent as ViewGroup
+      val declineButtonIndex = buttonParent.indexOfChild(declineButton)
+
+      buttonParent.removeView(consentButton)
+      buttonParent.addView(consentButton, declineButtonIndex)
+    }
+
+    return view
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,10 +45,12 @@ class StandaloneOptInFragment : BasePolicyFragment() {
 
   companion object {
     private const val ARG_SERVICES = "services"
+    private const val ARG_CONFIRM_BUTTON_AT_TOP = "confirmButtonAtTop"
 
-    fun newInstance(servicesResId: Int): StandaloneOptInFragment = StandaloneOptInFragment().apply {
+    fun newInstance(servicesResId: Int, confirmButtonAtTop: Boolean): StandaloneOptInFragment = StandaloneOptInFragment().apply {
       arguments = Bundle().apply {
         putInt(ARG_SERVICES, servicesResId)
+        putBoolean(ARG_CONFIRM_BUTTON_AT_TOP, confirmButtonAtTop)
       }
     }
   }
