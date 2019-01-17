@@ -7,7 +7,6 @@
         <item name="android:textAppearanceSmall">@style/TextAppearance.AppCompat.Caption</item>
         <item name="android:textAppearanceListItem">@style/TextAppearance.AppCompat.Subhead</item>
 
-        <item name="gdpr_colorWarning">#fe3344</item>
         <item name="gdpr_itemLayout">@layout/gdpr_policy_item_service</item>
         <item name="gdpr_closeIcon">@drawable/ic_close_black_24dp</item>
         <item name="gdpr_backIcon">@drawable/ic_arrow_back_black_24dp</item>
@@ -27,7 +26,6 @@
     <style name="GDPRPolicyStyle.Page.Information"/>
 
     <style name="GDPRPolicyStyle.Page.Warning">
-        <item name="colorAccent">?gdpr_colorWarning</item>
     </style>
 
     <style name="GDPRPolicyStyle.Button" parent="Widget.AppCompat.Button">

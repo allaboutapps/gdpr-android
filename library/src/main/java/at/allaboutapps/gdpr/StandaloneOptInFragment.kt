@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import at.allaboutapps.gdpr.widget.ServicesView
 
 class StandaloneOptInFragment : BasePolicyFragment() {
+    override fun themeOverrideAttr() = R.attr.gdpr_informationStyle
 
   override fun getTitle(): String = getString(R.string.gdpr_sdk__service_disabled_navigation_title)
 
@@ -16,17 +17,8 @@ class StandaloneOptInFragment : BasePolicyFragment() {
     savedInstanceState: Bundle?
   ): View? {
     val view = styledInflater().inflate(R.layout.gdpr_policy_fragment_opt_in_standalone, container, false)
-    val consentButtonAtTop = arguments?.getBoolean(ARG_CONFIRM_BUTTON_AT_TOP) ?: false
 
-    if (consentButtonAtTop) {
-      val declineButton = view.findViewById<View>(R.id.action_disable_services)
-      val consentButton = view.findViewById<View>(R.id.action_enable_services)
-      val buttonParent = consentButton.parent as ViewGroup
-      val declineButtonIndex = buttonParent.indexOfChild(declineButton)
-
-      buttonParent.removeView(consentButton)
-      buttonParent.addView(consentButton, declineButtonIndex)
-    }
+    applyButtonOrder(view, R.id.action_disable_services, R.id.action_enable_services)
 
     return view
   }
@@ -45,12 +37,10 @@ class StandaloneOptInFragment : BasePolicyFragment() {
 
   companion object {
     private const val ARG_SERVICES = "services"
-    private const val ARG_CONFIRM_BUTTON_AT_TOP = "confirmButtonAtTop"
 
-    fun newInstance(servicesResId: Int, confirmButtonAtTop: Boolean): StandaloneOptInFragment = StandaloneOptInFragment().apply {
+    fun newInstance(servicesResId: Int): StandaloneOptInFragment = StandaloneOptInFragment().apply {
       arguments = Bundle().apply {
         putInt(ARG_SERVICES, servicesResId)
-        putBoolean(ARG_CONFIRM_BUTTON_AT_TOP, confirmButtonAtTop)
       }
     }
   }

@@ -4,13 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.graphics.ColorUtils
 import android.support.v7.app.AppCompatActivity
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
@@ -19,87 +17,106 @@ import at.allaboutapps.gdpr.policy.PolicyFragment
 
 class PolicyActivity : AppCompatActivity() {
 
+  /**
+   * @param supportBackNavigation Enable navigation back to the previous logical entity.
+   */
+  enum class ScreenFlow(val supportBackNavigation: Boolean = false) {
+    /**
+     * Use this when the app shows a policy screen in addition to service opt-in (e.g. revier)
+     */
+      Standard(true),
+    /**
+     * Offer to opt in, does not open any further screens (typically triggered by the app after a user logs in)
+     */
+      OptInStandalone,
+    /**
+     * Offer to opt in or out, depending on whether the user has currently opted in or not.
+     */
+    Settings
+  }
+
   internal lateinit var styledContext: Context
   private var servicesResId: Int = 0
 
-  private var colorPrimary = 0
-  private var colorPrimaryDark = 0
-  private var colorAccent = 0
-  private var colorWarning = 0
+  private var screenFlow = ScreenFlow.Standard
 
-  private var isOptInScreen: Boolean = false
   private lateinit var policyUrl: String
 
   private lateinit var tintHelper: NavigationIconTintHelper
 
-  var gdprManager: GDPRPolicyManager = GDPRPolicyManager.instance()
+  private val gdprManager: GDPRPolicyManager = GDPRPolicyManager.instance()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     verifySetup()
 
-    val typedValue = TypedValue()
-    val styledTheme = styledContext.theme
-    colorPrimary = typedValue.loadAttr(styledTheme, R.attr.colorPrimary).data
-    colorPrimaryDark = typedValue.loadAttr(styledTheme, R.attr.colorPrimaryDark).data
-    colorAccent = typedValue.loadAttr(styledTheme, R.attr.colorAccent).data
-    colorWarning = typedValue.loadAttr(styledTheme, R.attr.gdpr_colorWarning).data
+    val screenFlowOrdinal = intent.getIntExtra(EXTRA_SCREEN_FLOW, ScreenFlow.Standard.ordinal)
+    screenFlow = ScreenFlow.values()[screenFlowOrdinal]
 
-    isOptInScreen = intent.getBooleanExtra(EXTRA_OPT_IN, false)
-    supportActionBar!!.setDisplayHomeAsUpEnabled(!isOptInScreen)
+    supportActionBar?.setDisplayHomeAsUpEnabled(screenFlow != ScreenFlow.OptInStandalone)
 
     tintHelper = NavigationIconTintHelper(supportActionBar!!, styledContext)
 
     supportFragmentManager.addOnBackStackChangedListener { updateNavigationIcon() }
+
     supportFragmentManager.registerFragmentLifecycleCallbacks(UpdateTitleCallback(this), false)
 
     updateNavigationIcon()
 
     if (savedInstanceState == null) {
-      supportFragmentManager.beginTransaction()
-              .replace(android.R.id.content, resolveStartFragment())
+      val fragment = resolveStartFragment()
+
+      supportFragmentManager
+        .beginTransaction()
+        .replace(android.R.id.content, fragment)
         .commit()
     }
   }
 
-  private fun resolveStartFragment(): Fragment {
-    return if (isOptInScreen) {
-      val confirmButtonAtTop = intent.getBooleanExtra(EXTRA_CONFIRM_BUTTON_AT_TOP, false)
+  private fun updateColors(fragment: BasePolicyFragment) {
+    val styledContext = fragment.styledContext.value
+    val typedValue = TypedValue()
+    val styledTheme = styledContext.theme
+    val colorPrimary = typedValue.loadAttr(styledTheme, R.attr.colorPrimary).data
+    val colorPrimaryDark = typedValue.loadAttr(styledTheme, R.attr.colorPrimaryDark).data
+    setToolbarColors(colorPrimary, colorPrimaryDark)
+  }
 
-      StandaloneOptInFragment.newInstance(servicesResId, confirmButtonAtTop)
-    } else {
-      PolicyFragment.newInstance(policyUrl)
+  private fun resolveStartFragment(): BasePolicyFragment {
+    return when (screenFlow) {
+      ScreenFlow.OptInStandalone -> StandaloneOptInFragment.newInstance(servicesResId)
+      ScreenFlow.Settings -> getShowServiceSettingsIntent()
+      else -> PolicyFragment.newInstance(policyUrl)
     }
   }
 
   fun onShowOptOutSettingsSelected() {
-    val fragment = if (areServicesEnabled()) {
-      updateToolbarColor(colorWarning)
-      OptOutWarningFragment.newInstance(servicesResId)
-    } else {
-      updateToolbarColor(colorAccent)
-      OptInFragment.newInstance(servicesResId)
-    }
+    val fragment = getShowServiceSettingsIntent()
 
     addSettingsFragment(fragment)
+  }
+
+  private fun getShowServiceSettingsIntent(): BasePolicyFragment {
+    return if (areServicesEnabled()) {
+      OptOutWarningFragment.newInstance(servicesResId)
+    } else {
+      OptInFragment.newInstance(servicesResId)
+    }
   }
 
   private fun addSettingsFragment(fragment: BasePolicyFragment) {
     supportFragmentManager.popBackStack(TAG_SETTINGS, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     supportFragmentManager.beginTransaction()
       .replace(android.R.id.content, fragment)
-      .addToBackStack(TAG_SETTINGS)
+            .apply {
+                if(screenFlow.supportBackNavigation) addToBackStack(TAG_SETTINGS)
+            }
       .commit()
   }
 
-  private fun updateToolbarColor(color: Int) {
-    val statusBarColor = ColorUtils.blendARGB(color, Color.BLACK, 0.15F)
-    setToolbarColors(color, statusBarColor)
-  }
-
   private fun setToolbarColors(color: Int, colorDark: Int) {
-    supportActionBar!!.setBackgroundDrawable(ColorDrawable(color))
+    supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       window.statusBarColor = colorDark
     }
@@ -107,6 +124,13 @@ class PolicyActivity : AppCompatActivity() {
 
   private fun areServicesEnabled(): Boolean {
     return gdprManager.servicesEnabled
+  }
+
+  override fun onAttachFragment(fragment: Fragment?) {
+    super.onAttachFragment(fragment)
+    if(fragment is BasePolicyFragment) {
+      updateColors(fragment)
+    }
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -119,11 +143,6 @@ class PolicyActivity : AppCompatActivity() {
 
   private fun updateNavigationIcon() {
     val canGoBack = supportFragmentManager.backStackEntryCount == 0
-
-    if (canGoBack) {
-      setToolbarColors(colorPrimary, colorPrimaryDark)
-    }
-
     tintHelper.updateNavigationIcon(canGoBack)
   }
 
@@ -131,7 +150,7 @@ class PolicyActivity : AppCompatActivity() {
   fun onDisableServicesClicked() {
     gdprManager.servicesEnabled = false
 
-    if (isOptInScreen) {
+    if (screenFlow == ScreenFlow.OptInStandalone) {
       setResult(Activity.RESULT_OK)
       finish()
       return
@@ -147,7 +166,7 @@ class PolicyActivity : AppCompatActivity() {
   fun onEnableServicesClicked() {
     gdprManager.servicesEnabled = true
 
-    if (isOptInScreen) {
+    if (screenFlow == ScreenFlow.OptInStandalone) {
       setResult(Activity.RESULT_OK)
       finish()
       return
@@ -210,20 +229,21 @@ class PolicyActivity : AppCompatActivity() {
   companion object {
     private const val TAG_SETTINGS = "settings"
     private const val EXTRA_URL = "url"
-    private const val EXTRA_OPT_IN = "opt_in"
-    private const val EXTRA_CONFIRM_BUTTON_AT_TOP = "confirm_button_at_top"
+    private const val EXTRA_SCREEN_FLOW = "screenFlow"
 
     @JvmStatic
     @JvmOverloads
     fun newIntent(context: Context, policyUrl: String? = null): Intent =
-      Intent(context, PolicyActivity::class.java).apply {
-        putExtra(EXTRA_URL, policyUrl)
-      }
+      Intent(context, PolicyActivity::class.java)
+          .putExtra(EXTRA_URL, policyUrl)
 
-    fun newOptInIntent(context: Context, policyUrl: String? = null, confirmButtonAtTop: Boolean? = false): Intent =
-      newIntent(context, policyUrl)
-          .putExtra(EXTRA_OPT_IN, true)
-          .putExtra(EXTRA_CONFIRM_BUTTON_AT_TOP, confirmButtonAtTop)
+    fun newOptInStandaloneIntent(context: Context): Intent =
+      Intent(context, PolicyActivity::class.java)
+          .putExtra(EXTRA_SCREEN_FLOW, ScreenFlow.OptInStandalone.ordinal)
+
+    fun getShowServiceSettingsIntent(context: Context): Intent =
+      Intent(context, PolicyActivity::class.java)
+          .putExtra(EXTRA_SCREEN_FLOW, ScreenFlow.Settings.ordinal)
   }
 
 }

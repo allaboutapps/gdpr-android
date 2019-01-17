@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">#ffaa22</item>
@@ -12,10 +11,22 @@
         <item name="android:actionButtonStyle">@style/WideButton</item>
         <!--<item name="gdpr_itemLayout">@layout/gdpr_item_service</item>-->
         <!--<item name="gdpr_errorLayout">@layout/error</item>-->
+        <item name="gdpr_warningStyle">@style/warning</item>
+        <item name="gdpr_informationStyle">@style/info</item>
+        <item name="gdpr_positiveOnTop">true</item>
     </style>
 
     <style name="WideButton">
         <item name="android:background">?colorPrimary</item>
     </style>
 
+    <style name="warning">
+        <item name="colorPrimary">#ff0000</item>
+        <item name="colorPrimaryDark">#00ff00</item>
+    </style>
+
+    <style name="info">
+        <item name="colorPrimary">#FFff00</item>
+        <item name="colorPrimaryDark">#FFaa00</item>
+    </style>
 </resources>

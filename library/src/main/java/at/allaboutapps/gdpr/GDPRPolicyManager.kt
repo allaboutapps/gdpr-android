@@ -67,11 +67,14 @@ class GDPRPolicyManager private constructor(
   }
 
   /**
-   * @return An Intent for the opt-in screen to display at the first app start.
-   * @param confirmButtonAtTop Pass true to move the Confirm button above the Decline button
+   * @return An Intent for the opt-in screen to display at the first app start (opens no further screens).
    */
-  fun getOptInIntent(confirmButtonAtTop: Boolean? = null): Intent {
-    return PolicyActivity.newOptInIntent(context, policyUrl, confirmButtonAtTop)
+  fun getOptInStandaloneIntent(): Intent {
+    return PolicyActivity.newOptInStandaloneIntent(context)
+  }
+
+  fun getServiceSettingsIntent(): Intent {
+    return PolicyActivity.getShowServiceSettingsIntent(context)
   }
 
   /**

@@ -8,6 +8,7 @@ import at.allaboutapps.gdpr.widget.ServicesView
 
 class OptInFragment : BasePolicyFragment() {
 
+  override fun themeOverrideAttr() = R.attr.gdpr_informationStyle
   override fun getTitle(): String = getString(R.string.gdpr_sdk__service_disabled_navigation_title)
 
   override fun onCreateView(
