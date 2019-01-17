@@ -3,12 +3,11 @@
     <attr name="gdpr_PolicyTheme" format="reference" />
     <attr name="gdpr_errorLayout" format="reference" />
 
-    <attr name="gdpr_colorWarning" format="reference|color" />
-
     <attr name="gdpr_itemLayout" format="reference" />
 
     <attr name="gdpr_closeIcon" format="reference" />
     <attr name="gdpr_backIcon" format="reference" />
+    <attr name="gdpr_positiveOnTop" format="boolean|reference" />
 
     <attr name="gdpr_warningStyle" format="reference"/>
     <attr name="gdpr_informationStyle" format="reference"/>

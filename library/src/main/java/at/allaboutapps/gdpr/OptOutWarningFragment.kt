@@ -8,6 +8,8 @@ import at.allaboutapps.gdpr.widget.ServicesView
 
 class OptOutWarningFragment : BasePolicyFragment() {
 
+
+  override fun themeOverrideAttr() = R.attr.gdpr_warningStyle
   override fun getTitle(): String = getString(R.string.gdpr_sdk__warning)
 
   override fun onCreateView(
@@ -15,7 +17,11 @@ class OptOutWarningFragment : BasePolicyFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    return styledInflater().inflate(R.layout.gdpr_policy_fragment_warning_opt_out, container, false)
+    val view = styledInflater().inflate(R.layout.gdpr_policy_fragment_warning_opt_out, container, false)
+
+    applyButtonOrder(view, R.id.action_opt_out, R.id.action_return)
+
+    return view
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
