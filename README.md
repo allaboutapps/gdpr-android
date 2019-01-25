@@ -14,7 +14,7 @@ Start by adding some meta data to your `<application>` tag in the manifest. If y
 
     <meta-data android:name="@string/gdpr_sdk__services" android:resource="@xml/services"/>
 
-Next create a `services.xml` in your `values/xml` directory.
+Next create a `services.xml` in your `res/xml` directory.
 
     <?xml version="1.0" encoding="utf-8"?>
     <services>
