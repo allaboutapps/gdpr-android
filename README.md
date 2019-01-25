@@ -1,5 +1,55 @@
 ## Policy Manager Library
 
+This library provides the following GDPR-related features, which can be used independently of each other:
+- Display a list of services with opt-in and opt-out buttons
+- Display a screen with legal terms, allowing the user to accept or decline
+
+### List of Services
+
+The list of services typically contains entries like Google Analytics, Crashlytics, etc. The app informs this library of the available services via meta-data in the app's 
+manifest (see below). 
+
+This screen is typically displayed in two scenarios:
+
+ - Automatically, after a user has logged in for the first time (on a per-user basis)
+
+   In this case, the user simply consents or declines, and there is no further screen flow.
+ - Triggered explicitly by a user, when they wish to modify their current opt-in / opt-out setting
+
+   Depending on whether the user opts in or out, there is a short screen flow that prompts the user to stay opted in, shows the current opt-in state, etc.
+
+Note: The timestamps referred to below apply to the legal terms screen only and have nothing to do with this feature.
+
+### Legal Terms Screen
+
+The legal terms screen displays legal text obtained from a server.
+
+The legal terms screen operates with two timestamps:
+
+- Timestamp 1 indicates when the legal text was last changed
+- Timestamp 2 indicates when the user last accepted the terms
+
+Together, the timestamps determine whether the user has accepted the current terms. The library uses this information to prompt the user to re-accept the terms after they have 
+changed.
+
+### Theming Support
+
+The appearance of the screens shown by the library can be customized using Android's theme support. See `attrs.xml` in the library for details. For an example of how to 
+override the styles, see `library/styles.xml` in this project, or look at the Gibble project. 
+
+An slightly more advanced customization option is changing the order of the opt-in and opt-out buttons. This can be done via the `gdpr_buttonMarginBottom` attribute.
+
+### Notes
+
+When a service like Google Analytics is used by an app, it is usually initialized automatically when the app starts. To prevent a service starting before the user has given their 
+consent, a meta-data item is usually available whose value can be set to `false`.
+
+The name of the meta-data item is
+- ` firebase_analytics_collection_enabled` for Google Analytics
+- `firebase_crashlytics_collection_enabled` for Crashlytics
+
+---
+
 To support some GDPR requirements this library includes a WebView wrapper to show your terms and supplies an interface to update the timestamp when they were last accepted.
 
 To comply with [Art. 21 GDPR - Right to object](https://gdpr-info.eu/art-21-gdpr/) links in the policy that end with the fragment `#app-opt-out` provide an option to opt-out from tracking done under [Art. 6 (e) or (f)](https://gdpr-info.eu/art-6-gdpr/).
@@ -14,7 +64,7 @@ Start by adding some meta data to your `<application>` tag in the manifest. If y
 
     <meta-data android:name="@string/gdpr_sdk__services" android:resource="@xml/services"/>
 
-Next create a `services.xml` in your `values/xml` directory.
+Next create a `services.xml` in your `res/xml` directory.
 
     <?xml version="1.0" encoding="utf-8"?>
     <services>
