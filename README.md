@@ -1,13 +1,16 @@
 ## Policy Manager Library
 
+To support some GDPR requirements this library includes a WebView wrapper to show your terms and supplies an interface to update the timestamp when they were last accepted.
+
+To comply with [Art. 21 GDPR - Right to object](https://gdpr-info.eu/art-21-gdpr/) links in the policy that end with the fragment `#app-opt-out` provide an option to opt-out from tracking done under [Art. 6 (e) or (f)](https://gdpr-info.eu/art-6-gdpr/).
+
 This library provides the following GDPR-related features, which can be used independently of each other:
-- Display a list of services with opt-in and opt-out buttons
+- Display a list of used services with opt-in and opt-out buttons
 - Display a screen with legal terms, allowing the user to accept or decline
 
 ### List of Services
 
-The list of services typically contains entries like Google Analytics, Crashlytics, etc. The app informs this library of the available services via meta-data in the app's 
-manifest (see below). 
+The list of services typically contains entries like Firebase Analytics, Crashlytics, etc. The app informs this library of the available services via meta-data in the app's manifest (see below). 
 
 This screen is typically displayed in two scenarios:
 
@@ -26,11 +29,10 @@ The legal terms screen displays legal text obtained from a server.
 
 The legal terms screen operates with two timestamps:
 
-- Timestamp 1 indicates when the legal text was last changed
-- Timestamp 2 indicates when the user last accepted the terms
+- **latest_policy** indicates when the legal text was last changed
+- **policy_accepted** indicates when the user last accepted the terms
 
-Together, the timestamps determine whether the user has accepted the current terms. The library uses this information to prompt the user to re-accept the terms after they have 
-changed.
+Together, the timestamps determine whether the user has accepted the current terms. The library uses this information to prompt the user to re-accept the terms after they have changed.
 
 ### Theming Support
 
@@ -45,14 +47,8 @@ When a service like Google Analytics is used by an app, it is usually initialize
 consent, a meta-data item is usually available whose value can be set to `false`.
 
 The name of the meta-data item is
-- ` firebase_analytics_collection_enabled` for Google Analytics
+- `firebase_analytics_collection_enabled` for Google Analytics
 - `firebase_crashlytics_collection_enabled` for Crashlytics
-
----
-
-To support some GDPR requirements this library includes a WebView wrapper to show your terms and supplies an interface to update the timestamp when they were last accepted.
-
-To comply with [Art. 21 GDPR - Right to object](https://gdpr-info.eu/art-21-gdpr/) links in the policy that end with the fragment `#app-opt-out` provide an option to opt-out from tracking done under [Art. 6 (e) or (f)](https://gdpr-info.eu/art-6-gdpr/).
 
 ## Setup
 
