@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'org.jetbrains.dokka-android'
 
 group = 'at.allaboutapps.gdpr'
-version = '0.0.6'
+version = '0.0.7'
 
 android {
     compileSdkVersion 28
