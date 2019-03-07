@@ -64,7 +64,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
   private fun load() {
     webView.settings.run {
-      javaScriptEnabled = false // don't for now
+      javaScriptEnabled = true //required to display complex policies on websites
       builtInZoomControls = false
       setSupportZoom(false)
       displayZoomControls = false
