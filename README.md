@@ -54,36 +54,42 @@ The name of the meta-data item is
 
 Start by adding some meta data to your `<application>` tag in the manifest. If your policy is not static you can also supply it later at runtime.
 
-    <meta-data
-        android:name="@string/gdpr_sdk__policy"
-        android:value="@string/privacy_policy" />
+```xml
+<meta-data
+    android:name="@string/gdpr_sdk__policy"
+    android:value="@string/privacy_policy" />
 
-    <meta-data android:name="@string/gdpr_sdk__services" android:resource="@xml/services"/>
+<meta-data android:name="@string/gdpr_sdk__services" android:resource="@xml/services"/>
+```
 
 Next create a `services.xml` in your `res/xml` directory.
 
-    <?xml version="1.0" encoding="utf-8"?>
-    <services>
-        <service name="@string/service_analytics" />
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<services>
+    <service name="@string/service_analytics" />
 
-        <service name="@string/service_firebase">
-            <!-- You can optionally define some bindings if you provide your own layout -->
-            <bind id="@android:id/text2">Description</bind>
-        </service>
-    </services>
+    <service name="@string/service_firebase">
+        <!-- You can optionally define some bindings if you provide your own layout -->
+        <bind id="@android:id/text2">Description</bind>
+    </service>
+</services>
+```
 
 Finally, add the theme to your AppTheme that this library should use. It has reasonable defaults, but most properties can be overridden.
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+```xml
+<!-- Base application theme. -->
+<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
 
-        <!-- ... other code ... -->
+    <!-- ... other code ... -->
 
-        <item name="gdpr_PolicyTheme">@style/GDPR</item>
-    </style>
+    <item name="gdpr_PolicyTheme">@style/GDPR</item>
+</style>
+```
 
 ## Usage
 
@@ -92,20 +98,24 @@ Finally, add the theme to your AppTheme that this library should use. It has rea
 On your registration you should link to the terms of service that the user has to accept. You can use `PrivacyPolicySwitch` which provides a link next to a switch, or you can implement your own.
 You can call `GDPRPolicyManager.instance().getPolicyIntent()` to get an intent to start the Activity.
 
-    <at.allaboutapps.gdpr.widget.PrivacyPolicySwitch
-        android:id="@+id/policy_accepted"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My text"
-        android:paddingEnd="?android:listPreferredItemPaddingEnd"
-        android:paddingStart="?android:listPreferredItemPaddingStart" />
+```xml
+<at.allaboutapps.gdpr.widget.PrivacyPolicySwitch
+    android:id="@+id/policy_accepted"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="My text"
+    android:paddingEnd="?android:listPreferredItemPaddingEnd"
+    android:paddingStart="?android:listPreferredItemPaddingStart" />
+```
 
 ### Login
 
 After the login or acceptance it is _your responsibility_ to update the latest saved timestamp.
 
-    GDPRPolicyManager.instance().setPolicyAccepted(true) // if local, uses current timestamp
-    GDPRPolicyManager.instance().setPolicyAccepted(timestamp) // queried from server
+```kt
+GDPRPolicyManager.instance().setPolicyAccepted(true) // if local, uses current timestamp
+GDPRPolicyManager.instance().setPolicyAccepted(timestamp) // queried from server
+```
 
 ### Policy changes
 
@@ -116,15 +126,17 @@ You should query your server about changes to the policy. Call `manager.updateLa
 In your Activity you can use `manager.shouldShowPolicy()` to check the current status and display a dialog.
 You can extend `PolicyUpdateDialogFragment` if you need some further customizations on the dialog design.
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // ... other code
+```java
+@Override
+protected void onStart() {
+    super.onStart();
+    // ... other code
 
-        if (GDPRPolicyManager.instance().shouldShowPolicy()) {
-            PolicyUpdateDialogFragment.newInstance().show(getSupportFragmentManager());
-        }
+    if (GDPRPolicyManager.instance().shouldShowPolicy()) {
+        PolicyUpdateDialogFragment.newInstance().show(getSupportFragmentManager());
     }
+}
+```
 
 #### Send updated to the server
 
@@ -135,13 +147,15 @@ The library will send broadcasts when the user
 
 `GdprServiceIntent.ACTION_POLICY_ACCEPTED` and `GdprServiceIntent.ACTION_SERVICES_CHANGED` will be sent respectively to any receivers registered in the app.
 
-    <receiver
-            android:name=".ServicesBroadcastReceiver"
-            android:exported="false">
-        <intent-filter>
-            <action android:name="at.allaboutapps.gdpr.SERVICES_CHANGED" />
-            <action android:name="at.allaboutapps.gdpr.POLICY_ACCEPTED" />
-        </intent-filter>
-    </receiver>
+```xml
+<receiver
+        android:name=".ServicesBroadcastReceiver"
+        android:exported="false">
+    <intent-filter>
+        <action android:name="at.allaboutapps.gdpr.SERVICES_CHANGED" />
+        <action android:name="at.allaboutapps.gdpr.POLICY_ACCEPTED" />
+    </intent-filter>
+</receiver>
+```
 
 In this receiver you should send or queue the updates to the server.
