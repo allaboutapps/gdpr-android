@@ -39,7 +39,7 @@ Together, the timestamps determine whether the user has accepted the current ter
 The appearance of the screens shown by the library can be customized using Android's theme support. See `attrs.xml` in the library for details. For an example of how to 
 override the styles, see `library/styles.xml` in this project, or look at the Gibble project. 
 
-An slightly more advanced customization option is changing the order of the opt-in and opt-out buttons. This can be done via the `gdpr_buttonMarginBottom` attribute.
+An slightly more advanced customization option is changing the order of the opt-in and opt-out buttons. This can be done via the `gdpr_positiveOnTop` attribute.
 
 ### Notes
 
