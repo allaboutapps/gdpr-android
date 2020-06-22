@@ -10,10 +10,10 @@ import android.webkit.WebView
  */
 interface PolicyLoadingMethod : Parcelable {
 
-  /**
-   * Load the content into the `webView`
-   *
-   * @param webView the loading target
-   */
-  fun startLoading(webView: WebView)
+    /**
+     * Load the content into the `webView`
+     *
+     * @param webView the loading target
+     */
+    fun startLoading(webView: WebView)
 }

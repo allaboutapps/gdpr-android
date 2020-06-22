@@ -6,4 +6,6 @@
         <!-- You can optionally define some bindings if you provide your own layout -->
         <bind id="@android:id/text2">Description</bind>
     </service>
+    <service name="Deletion Demo" supportsDeletion="true">
+    </service>
 </services>
