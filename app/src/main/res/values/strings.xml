@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">GDPRPolicySdk</string>
-    <string name="privacy_policy">file:///android_asset/bacon_policy.html</string>
+
+    <string name="privacy_policy">file:///android_asset/privacy_policy.html</string>
+    <string name="tos">file:///android_asset/terms_of_service.html</string>
+
     <string name="service_firebase">Firebase SDK</string>
-    <string name="service_analytics">Google Analytics</string>
-    <string name="policy_switch">I agree to the <annotation link="">Privacy Policy and Terms of Service</annotation></string>
+    <string name="service_crashlytics">Firebase Crashlytics</string>
+    <string name="policy_switch">I agree to the <annotation link="privacy">Privacy Policy</annotation> and <annotation link="tos">Terms of Service</annotation></string>
 </resources>

@@ -4,13 +4,18 @@ package at.allaboutapps.gdpr.policy
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.webkit.WebView
 import android.widget.ProgressBar
 import at.allaboutapps.gdpr.BasePolicyFragment
+import at.allaboutapps.gdpr.GDPRActivity
 import at.allaboutapps.gdpr.R
+import at.allaboutapps.gdpr.services.TextResource
 
 class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
@@ -18,16 +23,42 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
     private lateinit var progress: ProgressBar
     private lateinit var errorView: View
 
-    private val showLoading = true
+    private var showSettings = false
+    private var showLoading = true
     private lateinit var loadingMethod: PolicyLoadingMethod
 
-    override fun getTitle(): String = getString(R.string.gdpr_sdk__privacy_navigationtitle)
+    override fun getTitle(): String =
+        arguments?.getParcelable<TextResource>(ARG_TITLE)?.toString(requireContext()) ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val uri = arguments?.getString(ARG_URI)!!
+        val arguments = arguments!!
+        val uri = arguments.getString(ARG_URI)!!
         loadingMethod = UrlPolicyLoadingMethod(uri)
+
+        showSettings = arguments.getBoolean(ARG_SHOW_SETTINGS)
+        setHasOptionsMenu(showSettings)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.gdpr_sdk__menu_policy, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_action_settings -> {
+                showSettings()
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+        return true
+    }
+
+    private fun showSettings() {
+        val intent = GDPRActivity.newIntent(requireContext(), showToSInfo = false)
+        startActivity(intent)
     }
 
     override fun onCreateView(
@@ -35,7 +66,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return styledInflater().inflate(R.layout.gdpr_policy_fragment_policy, container, false)
+        return inflater.inflate(R.layout.gdpr_sdk__fragment_policy, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,6 +95,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
     private fun load() {
         webView.settings.run {
+            // todo can we make this optional?
             javaScriptEnabled = true // required to display complex policies on websites
             builtInZoomControls = false
             setSupportZoom(false)
@@ -91,7 +123,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
         loadingMethod.startLoading(webView)
     }
 
-    override fun onShowOptOutSelected() = policyActivity().onShowOptOutSettingsSelected()
+    override fun onShowOptOutSelected(): Unit = showSettings()
 
     override fun onError() = showError()
 
@@ -107,19 +139,25 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
         errorView.visibility = View.VISIBLE
 
-        val view: View = errorView.findViewById<View>(android.R.id.button1)
+        val view: View = errorView.findViewById(android.R.id.button1)
             ?: throw IllegalStateException("Must define `android.R.id.button1` for error retries in error layout")
         view.setOnClickListener { startLoadingContent() }
     }
 
     companion object {
+        private const val ARG_TITLE = "title"
         private const val ARG_URI = "uri"
+        private const val ARG_SHOW_SETTINGS = "show_settings"
 
-        fun newInstance(uri: String): PolicyFragment {
-            return PolicyFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_URI, uri)
-                }
+        internal fun newInstance(
+            title: TextResource,
+            uri: String,
+            showSettings: Boolean = true
+        ): PolicyFragment = PolicyFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(ARG_TITLE, title)
+                putString(ARG_URI, uri)
+                putBoolean(ARG_SHOW_SETTINGS, showSettings)
             }
         }
     }

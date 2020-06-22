@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<services>
-    <service name="@string/service_analytics" />
-
-    <service name="@string/service_firebase">
-        <!-- You can optionally define some bindings if you provide your own layout -->
-        <bind id="@android:id/text2">Description</bind>
-    </service>
-    <service name="Deletion Demo" supportsDeletion="true">
-    </service>
+<services isOptIn="true">
+    <service
+        name="@string/service_crashlytics"
+        description="Collect anonymized data about crashes to help improve performance and stability."
+        id="crashlytics" />
+    <service
+        name="@string/service_firebase"
+        description="Allows collection of data to Google Firebase. This data is anonymized usage statistics."
+        id="firebase"
+        supportsDeletion="true" />
+    <service
+        name="Deletion Demo"
+        id="demo"
+        isOptIn="false"
+        supportsDeletion="true" />
 </services>

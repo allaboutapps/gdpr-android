@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingStart="?listPreferredItemPaddingStart"
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingEnd="?listPreferredItemPaddingEnd"
+        android:paddingRight="?listPreferredItemPaddingRight"
+        android:text="@string/gdpr_sdk__settings_header_info_tos"
+        android:textAppearance="?gdpr_textAppearance" />
+
+    <TextView
+        android:id="@+id/action_tos"
+        style="?gdpr_linkButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:layout_marginLeft="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:minWidth="48dp"
+        android:minHeight="40dp"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+        android:text="@string/gdpr_sdk__settings_link_tos" />
+</LinearLayout>

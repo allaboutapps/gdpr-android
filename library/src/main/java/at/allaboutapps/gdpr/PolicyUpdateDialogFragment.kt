@@ -4,8 +4,6 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.annotation.StyleRes
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 
 /**
  * Dialog prompt to inform the user of a changed policy. The user can read more or accept the updated terms.
@@ -30,7 +28,7 @@ open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
     open fun onPrepareDialogBuilder(builder: AlertDialog.Builder) = Unit
 
     private fun showPolicy() {
-        startActivity(GDPRPolicyManager.instance().getPolicyIntent())
+        startActivity(GDPRPolicyManager.instance().newSettingsIntent(true))
     }
 
     private fun updateAcceptedTimestamp() {
@@ -59,13 +57,13 @@ open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(@StyleRes style: Int = 0) = PolicyUpdateDialogFragment().addArguments(style)
-
-        fun <T : PolicyUpdateDialogFragment> T.addArguments(@StyleRes style: Int = 0): T = this.apply {
-            arguments = Bundle().apply {
-                putInt(ARG_STYLE, style)
-            }
+        fun newInstance(@StyleRes style: Int = 0) = PolicyUpdateDialogFragment().addArguments {
+            putInt(ARG_STYLE, style)
         }
+
+        private inline fun <T : PolicyUpdateDialogFragment> T.addArguments(
+            crossinline block: Bundle.() -> Unit
+        ): T = this.apply { arguments = (arguments ?: Bundle()).also(block) }
     }
 
     interface PolicyAcceptedCallback {

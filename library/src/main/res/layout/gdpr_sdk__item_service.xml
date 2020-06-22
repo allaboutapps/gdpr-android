@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="8dp">
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/title_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?listPreferredItemHeightSmall"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="?listPreferredItemPaddingEnd"
+        android:paddingRight="?listPreferredItemPaddingRight"
+        android:paddingBottom="8dp"
+        android:switchPadding="16dp"
+        tools:text="Firebase" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?listPreferredItemHeightSmall"
+        android:paddingStart="?listPreferredItemPaddingStart"
+        android:paddingLeft="?listPreferredItemPaddingLeft"
+        android:paddingTop="8dp"
+        android:paddingEnd="?listPreferredItemPaddingEnd"
+        android:paddingRight="?listPreferredItemPaddingRight"
+        android:paddingBottom="8dp"
+        android:textAppearance="?gdpr_textAppearance"
+        tools:text="Allows collection of data to Google Firebase. This data is anonymized usage statistics." />
+
+    <Button
+        android:id="@+id/action_delete"
+        style="?borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:layout_marginRight="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:text="@string/gdpr_sdk__settings_action_clear_data" />
+</LinearLayout>

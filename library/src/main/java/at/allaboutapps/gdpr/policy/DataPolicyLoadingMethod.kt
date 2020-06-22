@@ -25,7 +25,7 @@ internal class DataPolicyLoadingMethod : PolicyLoadingMethod, Parcelable {
         mEncoding = encoding
     }
 
-    protected constructor(parcel: Parcel) {
+    private constructor(parcel: Parcel) {
         this.mBaseUrl = parcel.readString()
         this.mData = parcel.readString()!!
         this.mMimeType = parcel.readString()!!

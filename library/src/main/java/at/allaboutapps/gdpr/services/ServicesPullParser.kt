@@ -3,18 +3,18 @@ package at.allaboutapps.gdpr.services
 import android.content.Context
 import android.content.res.Resources
 import android.util.AttributeSet
-import android.util.SparseArray
 import android.util.Xml
 import androidx.annotation.XmlRes
 import org.xmlpull.v1.XmlPullParser
 
-class ServicesPullParser(private val context: Context, @XmlRes servicesResId: Int) {
+internal class ServicesPullParser(context: Context, @XmlRes servicesResId: Int) {
 
     private val resources: Resources = context.resources
     private val ns: String? = null
     private val parser: XmlPullParser = resources.getXml(servicesResId)
 
     private val attributeSet: AttributeSet = Xml.asAttributeSet(parser)
+    private var isOptIn = false
 
     fun parse(): ArrayList<Service> {
         parser.next()
@@ -22,10 +22,12 @@ class ServicesPullParser(private val context: Context, @XmlRes servicesResId: In
         parser.nextTag()
         val entries = ArrayList<Service>()
 
-        parser.require(XmlPullParser.START_TAG, ns, "services")
+        parser.require(XmlPullParser.START_TAG, ns, TAG_SERVICES)
+        isOptIn = readAttributeBoolean(SERVICES_OPT_IN, false)
+
         readElements { name ->
             when (name) {
-                "service" -> entries.add(readService())
+                TAG_SERVICE -> entries.add(readService())
                 else -> skip()
             }
         }
@@ -59,58 +61,41 @@ class ServicesPullParser(private val context: Context, @XmlRes servicesResId: In
     }
 
     private fun readService(): Service {
-        parser.require(XmlPullParser.START_TAG, ns, "service")
-        val resourceId = attributeSet.getAttributeResourceValue(ns, "name", 0)
-        val title: TextResource =
-            if (resourceId == 0) TextResource(
-                rawText = parser.getAttributeValue(
-                    ns,
-                    "name"
-                )
-            )
-            else TextResource(stringResId = resourceId)
-        val supportsDeletion = attributeSet.getAttributeBooleanValue(ns, "supportsDeletion", false)
-        val service = Service(title, supportsDeletion)
+        parser.require(XmlPullParser.START_TAG, ns, TAG_SERVICE)
 
-        readElements { name ->
-            when (name) {
-                "bind" -> {
-                    val id: Int = attributeSet.getAttributeResourceValue(ns, "id", 0)
-                    val text = parseString(readText())
-                    service.bindings.put(id, text)
-                }
-                else -> skip()
-            }
-        }
+        val id = attributeSet.getAttributeValue(ns, SERVICE_ID)
+        require(id.isNotEmpty()) { "service needs an `id`" }
 
-        return service
+        val title: TextResource = readAttributeText(SERVICE_NAME)
+        val description: TextResource = readAttributeText(SERVICE_DESCRIPTION)
+        val supportsDeletion = readAttributeBoolean(SERVICE_SUPPORT_DELETION, false)
+        val isOptIn = readAttributeBoolean(SERVICE_OPT_IN, isOptIn)
+
+        skip()
+
+        return Service(id, title, description, supportsDeletion, isOptIn)
     }
 
-    private fun parseString(value: String): TextResource {
-        return if (value.startsWith("@string/")) {
-            val resourceId =
-                resources.getIdentifier(value.substring("@string/".length), "string", context.packageName)
+    private fun readAttributeBoolean(attributeName: String, defaultValue: Boolean) =
+        attributeSet.getAttributeBooleanValue(ns, attributeName, defaultValue)
+
+    private fun readAttributeText(attributeName: String): TextResource {
+        val resourceId = attributeSet.getAttributeResourceValue(ns, attributeName, 0)
+        return if (resourceId == 0) {
+            val text = parser.getAttributeValue(ns, attributeName)
+            if (text == null) TextResource(rawText = "") else TextResource(rawText = text)
+        } else
             TextResource(stringResId = resourceId)
-        } else {
-            TextResource(rawText = value)
-        }
     }
 
-    private fun readText(): String {
-        var result = ""
-        if (parser.next() == XmlPullParser.TEXT) {
-            result = parser.text
-            parser.nextTag()
-        }
-        return result
+    companion object {
+        private const val TAG_SERVICES = "services"
+        private const val SERVICES_OPT_IN = "isOptIn"
+        private const val TAG_SERVICE = "service"
+        private const val SERVICE_ID = "id"
+        private const val SERVICE_NAME = "name"
+        private const val SERVICE_DESCRIPTION = "description"
+        private const val SERVICE_SUPPORT_DELETION = "supportsDeletion"
+        private const val SERVICE_OPT_IN = "isOptIn"
     }
 }
-
-data class Service(val name: TextResource, val supportsDeletion: Boolean) {
-    val bindings: SparseArray<TextResource> = SparseArray()
-}
-
-data class TextResource(
-    val stringResId: Int = 0,
-    val rawText: String = ""
-)

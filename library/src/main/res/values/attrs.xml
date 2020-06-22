@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="gdpr_PolicyTheme" format="reference" />
-    <attr name="gdpr_errorLayout" format="reference" />
-
-    <attr name="gdpr_itemLayout" format="reference" />
-
-    <attr name="gdpr_closeIcon" format="reference" />
-    <attr name="gdpr_backIcon" format="reference" />
-    <attr name="gdpr_positiveOnTop" format="boolean|reference" />
-
-    <attr name="gdpr_warningStyle" format="reference"/>
-    <attr name="gdpr_informationStyle" format="reference"/>
-
-    <attr name="gdpr_buttonMarginBottom" format="reference|dimension"/>
-
-    <declare-styleable name="ServicesView">
-        <attr name="gdpr_itemLayout" />
-    </declare-styleable>
+    <attr name="gdpr_headerTextAppearance" format="reference" />
+    <attr name="gdpr_textAppearance" format="reference" />
+    <attr name="gdpr_linkButtonStyle" format="reference" />
+    <attr name="gdpr_confirmButtonStyle" format="reference" />
 
     <declare-styleable name="PrivacyPolicySwitch">
         <attr name="android:text" />
     </declare-styleable>
-
 </resources>

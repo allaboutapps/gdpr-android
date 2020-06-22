@@ -17,6 +17,8 @@ android {
         targetSdkVersion 29
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -38,6 +40,10 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    def lifecycle_version = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     implementation "at.allaboutapps.web:a3webview:0.1.1"
 

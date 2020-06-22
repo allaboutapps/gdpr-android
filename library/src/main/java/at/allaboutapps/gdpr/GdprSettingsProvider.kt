@@ -92,6 +92,17 @@ class GdprSettingsProvider : ContentProvider() {
 
                 return cursor
             }
+            SERVICES -> {
+                val cursor = MatrixCursor(arrayOf("id", "enabled"))
+
+                settings.all.filterKeys { it.startsWith(SERVICE_PREFIX) }
+                    .forEach { (key, value) ->
+                        val enabled = value as Boolean
+                        cursor.newRow().add(key).add(enabled.asInt())
+                    }
+
+                return cursor
+            }
             else -> throw IllegalArgumentException("Not supported $uri ($match)")
         }
     }
@@ -129,6 +140,7 @@ class GdprSettingsProvider : ContentProvider() {
         override fun contains(key: String): Boolean =
             fetchItem(key, TYPE_CONTAINS).use { it.moveToFirst() && !it.isNull(0) }
 
+        @SuppressLint("Recycle")
         private fun fetchItem(key: String, type: String): Cursor {
             return context.contentResolver
                 .query(getContentUri(key, type), null, null, null, null)!!
@@ -147,6 +159,21 @@ class GdprSettingsProvider : ContentProvider() {
             defValues: MutableSet<String>?
         ): MutableSet<String> = error("set not supported")
 
+        @SuppressLint("Recycle")
+        fun readServiceStates(): Map<String, Boolean> {
+            val query = context.contentResolver.query(SERVICES_URI, null, null, null, null)
+            val services = mutableMapOf<String, Boolean>()
+            query!!.use { q ->
+                q.moveToPosition(-1)
+                while (q.moveToNext()) {
+                    val serviceId = q.getString(0).substring(SERVICE_PREFIX.length)
+                    val isEnabled = q.getInt(1) != 0
+                    services[serviceId] = isEnabled
+                }
+            }
+            return services
+        }
+
         class Editor internal constructor(internal var context: Context) :
             SharedPreferences.Editor {
 
@@ -161,9 +188,9 @@ class GdprSettingsProvider : ContentProvider() {
                 return true
             }
 
+            override fun putBoolean(key: String, value: Boolean) = edit { put(key, value) }
             override fun putString(key: String, value: String?) = edit { put(key, value) }
             override fun putLong(key: String, value: Long) = edit { put(key, value) }
-            override fun putBoolean(key: String, value: Boolean) = edit { put(key, value) }
             override fun putInt(key: String, value: Int) = edit { put(key, value) }
             override fun putFloat(key: String, value: Float) = edit { put(key, value) }
             override fun remove(key: String) = edit { putNull(key) }
@@ -186,6 +213,8 @@ class GdprSettingsProvider : ContentProvider() {
     }
 
     companion object {
+        const val SERVICE_PREFIX = "SERVICE_"
+
         private const val PREFERENCE_NAME = BuildConfig.LIBRARY_PACKAGE_NAME + ".GDPR"
 
         private const val TYPE_CONTAINS = "contains"
@@ -197,10 +226,12 @@ class GdprSettingsProvider : ContentProvider() {
         private const val TYPE_FLOAT = "float"
 
         private const val PROPERTY = 1
+        private const val SERVICES = 2
 
         private lateinit var AUTHORITY: String
 
         lateinit var BASE_URI: Uri
+        lateinit var SERVICES_URI: Uri
 
         private lateinit var matcher: UriMatcher
         private var isInitialized = false
@@ -218,9 +249,11 @@ class GdprSettingsProvider : ContentProvider() {
             AUTHORITY = info.authority
 
             matcher = UriMatcher(UriMatcher.NO_MATCH)
+            matcher.addURI(AUTHORITY, "services", SERVICES)
             matcher.addURI(AUTHORITY, "*/*", PROPERTY)
 
             BASE_URI = Uri.parse("content://$AUTHORITY")
+            SERVICES_URI = BASE_URI.buildUpon().path("services").build()
         }
 
         private fun getContentUri(key: String, type: String) =
@@ -251,3 +284,5 @@ class GdprSettingsProvider : ContentProvider() {
         }
     }
 }
+
+private fun Boolean.asInt() = if (this) 1 else 0

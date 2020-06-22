@@ -1,14 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="at.allaboutapps.gdpr">
+    package="at.allaboutapps.gdpr">
 
     <application>
 
-        <activity android:name=".PolicyActivity"/>
+        <activity android:name=".GDPRActivity" />
 
         <provider
-                android:exported="false"
-                android:name=".GdprSettingsProvider"
-                android:authorities="${applicationId}.gdpr_provider"/>
-
+            android:name=".GdprSettingsProvider"
+            android:authorities="${applicationId}.gdpr_provider"
+            android:exported="false" />
     </application>
 </manifest>

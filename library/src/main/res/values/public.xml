@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public name="gdpr_headerTextAppearance" type="attr" />
+    <public name="gdpr_textAppearance" type="attr" />
+    <public name="gdpr_linkButtonStyle" type="attr" />
+    <public name="gdpr_confirmButtonStyle" type="attr" />
+</resources>

@@ -37,7 +37,7 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     var checkedChangeListener: CompoundButton.OnCheckedChangeListener? = null
 
     init {
-        View.inflate(context, R.layout.widget_privacy_policy_switch, this)
+        View.inflate(context, R.layout.gdpr_sdk__widget_policy_switch, this)
 
         text = findViewById(android.R.id.text1)
         switch = findViewById(android.R.id.switchInputMethod)
@@ -132,7 +132,7 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     }
 
     private fun showPolicy() {
-        val intent = policyManager.getPolicyIntent()
+        val intent = policyManager.newSettingsIntent(showToSInfo = true)
         context.startActivity(intent)
     }
 }

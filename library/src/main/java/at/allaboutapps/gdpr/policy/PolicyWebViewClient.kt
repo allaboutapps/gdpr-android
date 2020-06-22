@@ -57,13 +57,18 @@ class PolicyWebViewClient(private val callback: Callback) : WebViewClient() {
         callback.onFinishedLoading()
     }
 
-    private fun isPhoneNumberUrl(url: String): Boolean = url.startsWith(PREFIX_TEL, ignoreCase = true)
-    private fun isMailToUrl(url: String): Boolean = url.startsWith(PREFIX_MAIL_TO, ignoreCase = true)
+    private fun isPhoneNumberUrl(url: String): Boolean =
+        url.startsWith(PREFIX_TEL, ignoreCase = true)
+
+    private fun isMailToUrl(url: String): Boolean =
+        url.startsWith(PREFIX_MAIL_TO, ignoreCase = true)
+
     private fun isHttpUrl(url: String): Boolean =
         url.startsWith(PREFIX_HTTPS, ignoreCase = true) ||
             url.startsWith(PREFIX_HTTP, ignoreCase = true)
 
-    private fun newUrlIntent(url: String): Intent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(url))
+    private fun newUrlIntent(url: String): Intent =
+        Intent(Intent.ACTION_VIEW).setData(Uri.parse(url))
 
     private fun newEmailIntent(
         address: String,
@@ -79,6 +84,7 @@ class PolicyWebViewClient(private val callback: Callback) : WebViewClient() {
 
     interface Callback {
 
+        @Deprecated("with v1.0 the settings should be accessed via the menu directly")
         fun onShowOptOutSelected()
 
         fun onError()
@@ -91,6 +97,7 @@ class PolicyWebViewClient(private val callback: Callback) : WebViewClient() {
         private const val PREFIX_HTTPS = "https:"
         private const val PREFIX_TEL = "tel:"
         private const val PREFIX_MAIL_TO = "mailto:"
+
         /**
          * Links to refer to opt out must be of the form `#fragment`.
          */

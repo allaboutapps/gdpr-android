@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.annotation.XmlRes
+import at.allaboutapps.gdpr.services.ServicesPullParser
 
 /**
  * Manages the users policy settings, when it was last accepted and whether tracking is enabled.
@@ -22,7 +24,7 @@ class GDPRPolicyManager private constructor(
     private lateinit var policyHolder: PolicyStatusHolder
 
     /**
-     * Link to the policy to display in [PolicyActivity]. This should be used if you need to
+     * Link to the policy to display in [GDPRActivity]. This property should be used if you need to
      * change the url at runtime, otherwise you should add it to the manifest on your application tag.
      *
      *    <meta-data
@@ -31,18 +33,17 @@ class GDPRPolicyManager private constructor(
      */
     var policyUrl: String? = null
 
-    private val settings = GdprSettingsProvider.GdprPreferences(context)
+    /**
+     * Link to the policy to display in [GDPRActivity]. This property should be used if you need to
+     * change the url at runtime, otherwise you should add it to the manifest on your application tag.
+     *
+     *    <meta-data
+     *      android:name="@string/gdpr_sdk__tos"
+     *      android:value="@string/privacy_terms_of_service" />
+     */
+    var termsOfServiceUrl: String? = null
 
-    var servicesEnabled
-        set(value) {
-            if (servicesEnabled != value) {
-                settings.edit()
-                    .putBoolean(SETTING_SERVICES_ENABLED, value)
-                    .apply()
-                sendChangedBroadcast()
-            }
-        }
-        get() = settings.getBoolean(SETTING_SERVICES_ENABLED, true)
+    private val settings = GdprSettingsProvider.GdprPreferences(context)
 
     /**
      * Whether the user has seen the latest version of the privacy policy.
@@ -60,21 +61,28 @@ class GDPRPolicyManager private constructor(
     }
 
     /**
-     * @return An Intent to show the applications privacy policy / terms.
+     * @return An Intent to show the applications privacy policy.
      */
     fun getPolicyIntent(): Intent {
-        return PolicyActivity.newIntent(context, policyUrl)
+        return GDPRActivity.newPolicyIntent(context, true)
+    }
+
+    /**
+     * @return An Intent to show the applications terms of service.
+     */
+    fun getTOSIntent(): Intent {
+        return GDPRActivity.newTOSIntent(context)
     }
 
     /**
      * @return An Intent for the opt-in screen to display at the first app start (opens no further screens).
      */
-    fun getOptInStandaloneIntent(): Intent {
-        return PolicyActivity.newOptInStandaloneIntent(context)
+    fun newConfirmationIntent(requireToS: Boolean = true, showSettings: Boolean = false): Intent {
+        return GDPRActivity.newConfirmationIntent(context, requireToS, showSettings)
     }
 
-    fun getServiceSettingsIntent(): Intent {
-        return PolicyActivity.getShowServiceSettingsIntent(context)
+    fun newSettingsIntent(showToSInfo: Boolean = false): Intent {
+        return GDPRActivity.newIntent(context, showToSInfo = showToSInfo)
     }
 
     /**
@@ -128,15 +136,9 @@ class GDPRPolicyManager private constructor(
         sendBroadcast(intent)
     }
 
-    private fun sendChangedBroadcast() {
-        val intent = Intent(GdprServiceIntent.ACTION_SERVICES_CHANGED)
-        sendBroadcast(intent)
-    }
-
     private fun sendBroadcast(intent: Intent) {
         intent.setPackage(context.packageName) // limit to current app!
             .putExtra(GdprServiceIntent.EXTRA_TIMESTAMP, policyHolder.getPolicyAcceptedTimestamp())
-            .putExtra(GdprServiceIntent.EXTRA_ENABLED, servicesEnabled)
 
         val packageName = context.packageName
         val broadcastReceivers = context.packageManager.queryBroadcastReceivers(intent, 0)
@@ -145,6 +147,13 @@ class GDPRPolicyManager private constructor(
             intent.setClassName(packageName, it.activityInfo.name)
             context.sendBroadcast(intent)
         }
+    }
+
+    fun readServiceStates(@XmlRes resId: Int): List<ServiceState> {
+        val parser = ServicesPullParser(context, resId)
+        val services = parser.parse()
+        val states = settings.readServiceStates()
+        return services.map { ServiceState(it.id, states[it.id] ?: !it.isOptIn) }
     }
 
     inner class PreferencePolicyStatusHolder : PolicyStatusHolder {
@@ -177,7 +186,6 @@ class GDPRPolicyManager private constructor(
         private const val SETTING_ACCEPTED_AT = "accepted_at"
 
         private const val SETTING_LATEST_POLICY_TIMESTAMP = "latest_policy_timestamp"
-        private const val SETTING_SERVICES_ENABLED = "services_enabled"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: GDPRPolicyManager? = null
@@ -209,3 +217,8 @@ class GDPRPolicyManager private constructor(
         }
     }
 }
+
+data class ServiceState(
+    val id: String,
+    val enabled: Boolean
+)

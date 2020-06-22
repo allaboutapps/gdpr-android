@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorBackgroundFloating"
+        android:elevation="6dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        tools:ignore="UnusedAttribute">
+
+        <!-- Fallback to a simple line for < 21 APIs w/o elevation -->
+        <include layout="@layout/gdpr_sdk__include_divider_fallback" />
+
+        <Button
+            android:id="@+id/action_submit"
+            style="?gdpr_confirmButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/gdpr_sdk__borderless_button_border_inset"
+            android:layout_marginRight="@dimen/gdpr_sdk__borderless_button_border_inset"
+            android:text="@string/gdpr_sdk__settings_confirmation_action_confirm" />
+    </FrameLayout>
+</LinearLayout>

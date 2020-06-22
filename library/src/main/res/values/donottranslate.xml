@@ -2,5 +2,5 @@
 <resources>
     <string name="gdpr_sdk__services">gdpr_services</string>
     <string name="gdpr_sdk__policy">gdp_policy_uri</string>
-
+    <string name="gdpr_sdk__tos">gdp_policy_tos</string>
 </resources>
