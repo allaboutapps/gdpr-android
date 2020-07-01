@@ -7,7 +7,7 @@ import android.webkit.WebView
 /**
  * Loads an url into the WebView.
  */
-class UrlPolicyLoadingMethod : PolicyLoadingMethod, Parcelable {
+internal class UrlPolicyLoadingMethod : PolicyLoadingMethod, Parcelable {
 
     private var mUrl: String? = null
 

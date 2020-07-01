@@ -6,7 +6,7 @@ import android.net.Uri
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-class PolicyWebViewClient(private val callback: Callback) : WebViewClient() {
+internal class PolicyWebViewClient(private val callback: Callback) : WebViewClient() {
 
     private var failedUrl: String? = null
 
