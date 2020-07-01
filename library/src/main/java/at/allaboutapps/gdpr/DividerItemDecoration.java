@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import at.allaboutapps.gdpr.widget.ServiceAdapter;
 
-public class DividerItemDecoration extends RecyclerView.ItemDecoration {
+class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final String TAG = "DividerItem";
     private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
