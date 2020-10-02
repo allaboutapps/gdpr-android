@@ -28,10 +28,15 @@
         android:text="@string/gdpr_sdk__settings_description_tracking_services"
         android:textAppearance="?gdpr_textAppearance" />
 
-    <LinearLayout
+    <at.allaboutapps.gdpr.ButtonBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:paddingLeft="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:paddingEnd="@dimen/gdpr_sdk__borderless_button_border_inset"
+        android:paddingRight="@dimen/gdpr_sdk__borderless_button_border_inset">
 
         <TextView
             android:id="@+id/action_privacy"
@@ -39,8 +44,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/gdpr_sdk__borderless_button_border_inset"
-            android:layout_marginLeft="@dimen/gdpr_sdk__borderless_button_border_inset"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:gravity="center_vertical"
@@ -52,19 +55,20 @@
             android:paddingRight="8dp"
             android:text="@string/gdpr_sdk__settings_link_privacy_policy" />
 
-        <Space
+        <android.widget.Space
+            android:id="@+id/spacer"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minWidth="16dp"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/action_allow_all"
             style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/gdpr_sdk__borderless_button_border_inset"
-            android:layout_marginRight="@dimen/gdpr_sdk__borderless_button_border_inset"
+            android:layout_gravity="center_vertical|end"
             android:text="@string/gdpr_sdk__settings_action_allow_all" />
-    </LinearLayout>
+    </at.allaboutapps.gdpr.ButtonBarLayout>
 </LinearLayout>
