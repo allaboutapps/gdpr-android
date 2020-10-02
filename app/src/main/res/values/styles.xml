@@ -18,10 +18,23 @@
         </item>
         <!-- Style for the "links" to the ToS and Privacy Policy -->
         <item name="gdpr_linkButtonStyle">@style/LinkButton</item>
+
+        <!-- Style for other buttons (accept all, delete) -->
+        <item name="borderlessButtonStyle">@style/BorderlessButton</item>
+        <!-- Switch style -->
+        <item name="switchStyle">@style/Switch</item>
     </style>
 
     <style name="LinkButton" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textAppearance">?gdpr_textAppearance</item>
         <item name="android:textColor">?colorPrimary</item>
+    </style>
+
+    <style name="BorderlessButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:textSize">11sp</item>
     </style>
 </resources>

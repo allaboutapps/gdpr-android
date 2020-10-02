@@ -54,7 +54,7 @@ The appearance (colors, fonts, ...) can be customized using Android's themes. A 
 ```xml
 <!-- You can simply extend your app theme and add those 4 attributes,
        or use any of the AppCompat themes as parent -->
-<style name="AppTheme.GDPR">
+<style name="AppTheme.GDPR" parent="Theme.AppCompat.DayNight.DarkActionBar">
     <!-- Text for subheaders in the settings -->
     <item name="gdpr_headerTextAppearance">@style/TextAppearance.AppCompat.Body2</item>
     <!-- Body text for descriptions and such -->
@@ -63,8 +63,15 @@ The appearance (colors, fonts, ...) can be customized using Android's themes. A 
     <item name="gdpr_confirmButtonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
     <!-- Style for the "links" to the ToS and Privacy Policy -->
     <item name="gdpr_linkButtonStyle">@style/LinkButton</item>
+
+    <!-- Style for other buttons (accept all, delete) -->
+    <item name="borderlessButtonStyle">@style/BorderlessButton</item>
+    <!-- Switch style -->
+    <item name="switchStyle">@style/Switch</item>
 </style>
 ```
+
+Make sure to use an AppCompat or Bridge (Material Components) theme for this Activity.
 
 ```xml
 <activity
