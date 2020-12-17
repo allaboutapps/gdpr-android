@@ -18,7 +18,7 @@ class ServicesManager(private val context: Context) {
     }
 
     private fun refreshService(intent: Intent) {
-        val serviceId = intent.getStringExtra(GdprServiceIntent.EXTRA_SERVICE)!!
+        val serviceId = intent.getIntExtra(GdprServiceIntent.EXTRA_SERVICE, 0)
         val enabled = intent.getBooleanExtra(GdprServiceIntent.EXTRA_ENABLED, false)
         val clearData = intent.getBooleanExtra(GdprServiceIntent.EXTRA_CLEAR, false)
 
@@ -34,16 +34,17 @@ class ServicesManager(private val context: Context) {
         val states = GDPRPolicyManager.instance()
             .readServiceStates(R.xml.gdpr_services)
         states.forEach { (serviceId, enabled) ->
-            Timber.d("  $serviceId: ${if (enabled) "enabled" else "disabled"}")
+            val serviceIdName = context.resources.getResourceEntryName(serviceId)
+            Timber.d("  $serviceIdName($serviceId): ${if (enabled) "enabled" else "disabled"}")
             getTrackerHandler(serviceId).setTracking(enabled)
         }
     }
 
-    private fun getTrackerHandler(serviceId: String): TrackerHandler =
+    private fun getTrackerHandler(serviceId: Int): TrackerHandler =
         when (serviceId) {
-            "crashlytics" -> CrashlyticsTrackerHandler()
-            "firebase" -> FirebaseTrackerHandler(context)
-            "demo" -> DemoTrackerHandler()
+            R.id.gdpr_service_crashlytics -> CrashlyticsTrackerHandler()
+            R.id.gdpr_service_firebase -> FirebaseTrackerHandler(context)
+            R.id.gdpr_service_demo -> DemoTrackerHandler()
             else -> error("unknown service id $serviceId")
         }
 }

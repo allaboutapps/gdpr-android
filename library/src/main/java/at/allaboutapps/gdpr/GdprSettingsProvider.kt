@@ -11,6 +11,7 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import androidx.annotation.IdRes
 
 class GdprSettingsProvider : ContentProvider() {
 
@@ -117,6 +118,9 @@ class GdprSettingsProvider : ContentProvider() {
     }
 
     class GdprPreferences internal constructor(private val context: Context) : SharedPreferences {
+
+        fun getNameForId(@IdRes serviceId: Int): String =
+            context.resources.getResourceEntryName(serviceId)
 
         override fun edit(): Editor {
             return Editor(context)

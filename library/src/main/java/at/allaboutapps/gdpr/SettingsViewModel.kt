@@ -57,7 +57,7 @@ internal class SettingsViewModel(
         loadServiceItems()
     }
 
-    fun setEnabled(serviceId: String, isEnabled: Boolean) {
+    fun setEnabled(serviceId: Int, isEnabled: Boolean) {
         settingsManager.setEnabled(serviceId, isEnabled)
         loadServiceItems()
     }
@@ -66,11 +66,11 @@ internal class SettingsViewModel(
         _tosAccepted.value = accepted
     }
 
-    private fun getState(serviceId: String): Boolean {
+    private fun getState(serviceId: Int): Boolean {
         return settingsManager.getState(serviceId)
     }
 
-    fun clearService(serviceId: String) {
+    fun clearService(serviceId: Int) {
         settingsManager.clearService(serviceId)
         loadServiceItems()
     }

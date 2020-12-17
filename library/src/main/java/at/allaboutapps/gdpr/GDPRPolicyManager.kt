@@ -153,7 +153,10 @@ class GDPRPolicyManager private constructor(
         val parser = ServicesPullParser(context, resId)
         val services = parser.parse()
         val states = settings.readServiceStates()
-        return services.map { ServiceState(it.id, states[it.id] ?: !it.isOptIn) }
+        return services.map { service ->
+            val serviceIdName = settings.getNameForId(service.id)
+            ServiceState(service.id, states[serviceIdName] ?: !service.isOptIn)
+        }
     }
 
     inner class PreferencePolicyStatusHolder : PolicyStatusHolder {
@@ -219,6 +222,6 @@ class GDPRPolicyManager private constructor(
 }
 
 data class ServiceState(
-    val id: String,
+    val id: Int,
     val enabled: Boolean
 )

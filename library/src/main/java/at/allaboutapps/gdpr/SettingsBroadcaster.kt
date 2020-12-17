@@ -5,7 +5,7 @@ import android.content.Intent
 
 internal class SettingsBroadcaster(private val context: Context) {
 
-    fun sendServiceChangedBroadcast(serviceId: String, enabled: Boolean, clear: Boolean = false) {
+    fun sendServiceChangedBroadcast(serviceId: Int, enabled: Boolean, clear: Boolean = false) {
         val intent = createIntent(GdprServiceIntent.ACTION_SERVICES_CHANGED)
             .putExtra(GdprServiceIntent.EXTRA_SERVICE, serviceId)
             .putExtra(GdprServiceIntent.EXTRA_ENABLED, enabled)

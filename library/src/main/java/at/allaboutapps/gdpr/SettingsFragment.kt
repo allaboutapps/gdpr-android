@@ -89,7 +89,7 @@ internal sealed class ListItem {
     object PrivacyInfo : ListItem()
     object ServicesHeader : ListItem()
     data class Service(
-        val id: String,
+        val id: Int,
         val name: TextResource,
         val description: TextResource,
         val enabled: Boolean,

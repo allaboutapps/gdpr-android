@@ -3,15 +3,15 @@
     <service
         name="@string/service_crashlytics"
         description="Collect anonymized data about crashes to help improve performance and stability."
-        id="crashlytics" />
+        id="@+id/gdpr_service_crashlytics" />
     <service
         name="@string/service_firebase"
         description="Allows collection of data to Google Firebase. This data is anonymized usage statistics."
-        id="firebase"
+        id="@+id/gdpr_service_firebase"
         supportsDeletion="true" />
     <service
         name="Deletion Demo"
-        id="demo"
+        id="@+id/gdpr_service_demo"
         isOptIn="false"
         supportsDeletion="true" />
 </services>

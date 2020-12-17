@@ -18,6 +18,7 @@ internal class ViewModelFactory(
         val broadcaster = SettingsBroadcaster(context)
 
         val settingsManager = ServiceSettingsManager(
+            context.resources,
             services,
             broadcaster,
             GdprSettingsProvider.GdprPreferences(context)

@@ -63,8 +63,8 @@ internal class ServicesPullParser(context: Context, @XmlRes servicesResId: Int) 
     private fun readService(): Service {
         parser.require(XmlPullParser.START_TAG, ns, TAG_SERVICE)
 
-        val id = attributeSet.getAttributeValue(ns, SERVICE_ID)
-        require(id.isNotEmpty()) { "service needs an `id`" }
+        val id = attributeSet.getAttributeResourceValue(ns, SERVICE_ID, 0)
+        require(id != 0) { "service needs an `id`" }
 
         val title: TextResource = readAttributeText(SERVICE_NAME)
         val description: TextResource = readAttributeText(SERVICE_DESCRIPTION)
