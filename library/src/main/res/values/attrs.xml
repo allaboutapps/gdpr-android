@@ -5,7 +5,11 @@
     <attr name="gdpr_linkButtonStyle" format="reference" />
     <attr name="gdpr_confirmButtonStyle" format="reference" />
 
+    <!-- Specifies if the settings page should include a link to the Terms of Service. -->
+    <attr name="showToSInfo" format="boolean" />
+
     <declare-styleable name="PrivacyPolicySwitch">
         <attr name="android:text" />
+        <attr name="showToSInfo" />
     </declare-styleable>
 </resources>

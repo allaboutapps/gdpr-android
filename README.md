@@ -93,7 +93,8 @@ You can use `GDPRPolicyManager.instance().newSettingsIntent(showToSInfo = true)`
     android:layout_height="wrap_content"
     android:text="I accept the <annotation link="privacy">Privacy Policy</annotation> and <annotation link="tos">Terms of Service</annotation>"
     android:paddingEnd="?android:listPreferredItemPaddingEnd"
-    android:paddingStart="?android:listPreferredItemPaddingStart" />
+    android:paddingStart="?android:listPreferredItemPaddingStart"
+    app:showToSInfo="true" />
 ```
 
 ### Login

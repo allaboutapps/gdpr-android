@@ -34,6 +34,12 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     private val text: TextView
     private val switch: SwitchCompat
 
+    /**
+     * Specifies if the settings page should include a link to the Terms of Service.
+     * @see R.attr.showToSInfo
+     */
+    var showToSInfo: Boolean
+
     var checkedChangeListener: CompoundButton.OnCheckedChangeListener? = null
 
     init {
@@ -47,6 +53,8 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
 
         text.text =
             wrapInClickableSpan(typedArray.getText(R.styleable.PrivacyPolicySwitch_android_text))
+
+        showToSInfo = typedArray.getBoolean(R.styleable.PrivacyPolicySwitch_showToSInfo, true)
 
         typedArray.recycle()
 
@@ -132,7 +140,7 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     }
 
     private fun showPolicy() {
-        val intent = policyManager.newSettingsIntent(showToSInfo = true)
+        val intent = policyManager.newSettingsIntent(showToSInfo = showToSInfo)
         context.startActivity(intent)
     }
 }
