@@ -1,5 +1,4 @@
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
     id "com.github.dcendents.android-maven" version "2.1"
 }
 apply plugin: 'com.android.library'
@@ -39,7 +38,17 @@ android {
     }
 }
 
+dokkaHtml.configure {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+        }
+    }
+}
+
 dependencies {
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.4.32")
+
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation "androidx.recyclerview:recyclerview:1.2.0"
     def lifecycle_version = "2.3.1"
@@ -54,49 +63,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
-bintray {
-    user = 'allaboutapps'
-    // read pw from secure travis.yml
-    key = System.getenv('BINTRAY_KEY')
-    pkg {
-        repo = 'A3-Android'
-        name = "$project.group.$archivesBaseName"
-
-        version {
-            name = project.version
-            desc = ''
-            vcsTag = System.getenv('TRAVIS_TAG')
-        }
-
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/allaboutapps/gdpr-android'
-        websiteUrl = 'http://www.allaboutapps.at'
-    }
-    configurations = ['archives']
-}
-
 task javadoc(type: Javadoc) {
     excludes = ['**/*.kt'] // Exclude all kotlin files from javadoc file.
 }
 
-dokka {
-    outputFormat = 'javadoc'
-    outputDirectory = javadoc.destinationDir
-
-    configuration {
-        includeNonPublic = false
-        skipDeprecated = false
-
-        reportUndocumented = true
-        skipEmptyPackages = true
-        targets = ["JVM"]
-        platform = "JVM"
-    }
-}
-
-task generateJavadocsJar(type: Jar, dependsOn: dokka) {
+task generateJavadocsJar(type: Jar, dependsOn: dokkaJavadoc) {
     classifier = 'javadoc'
-    from dokka.outputDirectory
+    from dokkaJavadoc.outputDirectory
 }
 
 task generateSourcesJar(type: Jar) {
