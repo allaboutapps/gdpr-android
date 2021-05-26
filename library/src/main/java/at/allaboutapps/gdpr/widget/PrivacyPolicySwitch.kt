@@ -26,7 +26,7 @@ import at.allaboutapps.gdpr.R
  *
  *     I agree to the <annotation link="">Privacy Policy and Terms of Service</annotation>
  */
-class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
+public class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     LinearLayout(context, attrs), Checkable {
 
     private val policyManager = GDPRPolicyManager.instance()
@@ -38,9 +38,9 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
      * Specifies if the settings page should include a link to the Terms of Service.
      * @see R.attr.showToSInfo
      */
-    var showToSInfo: Boolean
+    public var showToSInfo: Boolean
 
-    var checkedChangeListener: CompoundButton.OnCheckedChangeListener? = null
+    public var checkedChangeListener: CompoundButton.OnCheckedChangeListener? = null
 
     init {
         View.inflate(context, R.layout.gdpr_sdk__widget_policy_switch, this)
@@ -105,7 +105,7 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
     }
 
     override fun isChecked(): Boolean = switch.isChecked
-    override fun toggle() = switch.toggle()
+    override fun toggle(): Unit = switch.toggle()
     override fun setChecked(checked: Boolean) {
         switch.isChecked = checked
     }
@@ -131,7 +131,7 @@ class PrivacyPolicySwitch(context: Context, attrs: AttributeSet? = null) :
         }
     }
 
-    inner class PolicyClickSpan : ClickableSpan() {
+    private inner class PolicyClickSpan : ClickableSpan() {
 
         override fun onClick(widget: View) {
             clearFocus()

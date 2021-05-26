@@ -10,7 +10,7 @@ import at.allaboutapps.gdpr.services.ServicesPullParser
 /**
  * Manages the users policy settings, when it was last accepted and whether tracking is enabled.
  */
-class GDPRPolicyManager private constructor(
+public class GDPRPolicyManager private constructor(
     private val context: Context
 ) {
 
@@ -31,7 +31,7 @@ class GDPRPolicyManager private constructor(
      *      android:name="@string/gdpr_sdk__policy"
      *      android:value="@string/privacy_policy" />
      */
-    var policyUrl: String? = null
+    public var policyUrl: String? = null
 
     /**
      * Link to the policy to display in [GDPRActivity]. This property should be used if you need to
@@ -41,7 +41,7 @@ class GDPRPolicyManager private constructor(
      *      android:name="@string/gdpr_sdk__tos"
      *      android:value="@string/privacy_terms_of_service" />
      */
-    var termsOfServiceUrl: String? = null
+    public var termsOfServiceUrl: String? = null
 
     private val settings = GdprSettingsProvider.GdprPreferences(context)
 
@@ -51,7 +51,7 @@ class GDPRPolicyManager private constructor(
      *
      * You can use [PolicyUpdateDialogFragment.show] to show information about the latest changes.
      */
-    fun shouldShowPolicy(): Boolean {
+    public fun shouldShowPolicy(): Boolean {
         val acceptedTimestamp = policyHolder.getPolicyAcceptedTimestamp()
         if (acceptedTimestamp == 0L) {
             return true
@@ -63,25 +63,28 @@ class GDPRPolicyManager private constructor(
     /**
      * @return An Intent to show the applications privacy policy.
      */
-    fun getPolicyIntent(): Intent {
+    public fun getPolicyIntent(): Intent {
         return GDPRActivity.newPolicyIntent(context, true)
     }
 
     /**
      * @return An Intent to show the applications terms of service.
      */
-    fun getTOSIntent(): Intent {
+    public fun getTOSIntent(): Intent {
         return GDPRActivity.newTOSIntent(context)
     }
 
     /**
      * @return An Intent for the opt-in screen to display at the first app start (opens no further screens).
      */
-    fun newConfirmationIntent(requireToS: Boolean = true, showSettings: Boolean = false): Intent {
+    public fun newConfirmationIntent(
+        requireToS: Boolean = true,
+        showSettings: Boolean = false
+    ): Intent {
         return GDPRActivity.newConfirmationIntent(context, requireToS, showSettings)
     }
 
-    fun newSettingsIntent(showToSInfo: Boolean = false): Intent {
+    public fun newSettingsIntent(showToSInfo: Boolean = false): Intent {
         return GDPRActivity.newIntent(context, showToSInfo = showToSInfo)
     }
 
@@ -89,7 +92,7 @@ class GDPRPolicyManager private constructor(
      * Set the timestamp of the latest policy update. When this date is after the time the user last accepted the policy
      * [shouldShowPolicy] will return true.
      */
-    fun updateLatestPolicyTimestamp(timestamp: Long) {
+    public fun updateLatestPolicyTimestamp(timestamp: Long) {
         settings.edit().putLong(SETTING_LATEST_POLICY_TIMESTAMP, timestamp).apply()
     }
 
@@ -98,7 +101,7 @@ class GDPRPolicyManager private constructor(
      *
      * This should primarily be used with local apps. Use [setPolicyAccepted] to update the timestamp with values from the server.
      */
-    fun setPolicyAccepted(isAccepted: Boolean) {
+    public fun setPolicyAccepted(isAccepted: Boolean) {
         val timestamp = if (isAccepted) System.currentTimeMillis() else 0L
         setPolicyAccepted(timestamp)
     }
@@ -108,7 +111,7 @@ class GDPRPolicyManager private constructor(
      *
      * Alternatively you can use [setPolicyAccepted] for local apps.
      */
-    fun setPolicyAccepted(timestamp: Long) {
+    public fun setPolicyAccepted(timestamp: Long) {
         if (policyHolder.getPolicyAcceptedTimestamp() != timestamp) {
             policyHolder.setPolicyAcceptedTimestamp(timestamp)
             sendAcceptedBroadcast()
@@ -120,7 +123,7 @@ class GDPRPolicyManager private constructor(
      *
      * @return the timestamp, or `0` if it was not set.
      */
-    fun getPolicyAccepted(): Long {
+    public fun getPolicyAccepted(): Long {
         return policyHolder.getPolicyAcceptedTimestamp()
     }
 
@@ -149,7 +152,7 @@ class GDPRPolicyManager private constructor(
         }
     }
 
-    fun readServiceStates(@XmlRes resId: Int): List<ServiceState> {
+    public fun readServiceStates(@XmlRes resId: Int): List<ServiceState> {
         val parser = ServicesPullParser(context, resId)
         val services = parser.parse()
         val states = settings.readServiceStates()
@@ -159,7 +162,7 @@ class GDPRPolicyManager private constructor(
         }
     }
 
-    inner class PreferencePolicyStatusHolder : PolicyStatusHolder {
+    private inner class PreferencePolicyStatusHolder : PolicyStatusHolder {
 
         override fun setPolicyAcceptedTimestamp(timestamp: Long) {
             settings.modify {
@@ -184,7 +187,7 @@ class GDPRPolicyManager private constructor(
         return this
     }
 
-    companion object {
+    public companion object {
 
         private const val SETTING_ACCEPTED_AT = "accepted_at"
 
@@ -200,7 +203,7 @@ class GDPRPolicyManager private constructor(
          */
         @JvmStatic
         @Synchronized
-        fun initialize(context: Context): GDPRPolicyManager {
+        public fun initialize(context: Context): GDPRPolicyManager {
             if (instance == null) {
                 instance = GDPRPolicyManager(context.applicationContext)
                 GdprSettingsProvider.initialize(context)
@@ -214,14 +217,14 @@ class GDPRPolicyManager private constructor(
          * @return the singleton instance
          */
         @JvmStatic
-        fun instance(): GDPRPolicyManager {
+        public fun instance(): GDPRPolicyManager {
             return this.instance
                 ?: throw IllegalStateException("Please call `initialize(Context)` before using this.")
         }
     }
 }
 
-data class ServiceState(
+public data class ServiceState(
     val id: Int,
     val enabled: Boolean
 )

@@ -8,12 +8,12 @@ import android.webkit.WebView
  *
  * @see DataPolicyLoadingMethod
  */
-interface PolicyLoadingMethod : Parcelable {
+public interface PolicyLoadingMethod : Parcelable {
 
     /**
      * Load the content into the `webView`
      *
      * @param webView the loading target
      */
-    fun startLoading(webView: WebView)
+    public fun startLoading(webView: WebView)
 }

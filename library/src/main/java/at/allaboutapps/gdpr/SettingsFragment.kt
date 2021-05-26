@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.allaboutapps.gdpr.services.TextResource
 import at.allaboutapps.gdpr.widget.ServiceAdapter
 
-class SettingsFragment : BasePolicyFragment() {
+public class SettingsFragment : BasePolicyFragment() {
 
     private lateinit var adapter: ServiceAdapter
     private lateinit var viewModel: SettingsViewModel
@@ -24,11 +23,11 @@ class SettingsFragment : BasePolicyFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val servicesResId = arguments!!.getInt(ARG_SERVICES)
+        val servicesResId = requireArguments().getInt(ARG_SERVICES)
         val factory = ViewModelFactory(servicesResId, requireContext())
         viewModel = ViewModelProvider(requireActivity(), factory).get(SettingsViewModel::class.java)
 
-        val args = arguments!!
+        val args = requireArguments()
         viewModel.tosMode = args.getInt(ARG_REQUIRE_TOS, SettingsViewModel.TOS_HIDE)
         viewModel.showSettings = args.getBoolean(ARG_SHOW_SETTINGS, true)
 
@@ -51,7 +50,7 @@ class SettingsFragment : BasePolicyFragment() {
         adapter = ServiceAdapter(viewModel, this::showTos, this::showPrivacyPolicy)
         list.adapter = adapter
 
-        viewModel.listItems.observe(viewLifecycleOwner, Observer { adapter.submitList(it) })
+        viewModel.listItems.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
 
     private fun showTos() {
@@ -64,12 +63,12 @@ class SettingsFragment : BasePolicyFragment() {
         startActivity(intent)
     }
 
-    companion object {
+    internal companion object {
         private const val ARG_SERVICES = "services"
         private const val ARG_REQUIRE_TOS = "require_tos"
         private const val ARG_SHOW_SETTINGS = "show_settings"
 
-        fun newInstance(
+        internal fun newInstance(
             servicesResId: Int,
             tosMode: Int,
             showSettings: Boolean

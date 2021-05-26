@@ -17,7 +17,7 @@ import at.allaboutapps.gdpr.GDPRActivity
 import at.allaboutapps.gdpr.R
 import at.allaboutapps.gdpr.services.TextResource
 
-class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
+public class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
     private lateinit var webView: WebView
     private lateinit var progress: ProgressBar
@@ -33,7 +33,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val arguments = arguments!!
+        val arguments = requireArguments()
         val uri = arguments.getString(ARG_URI)!!
         loadingMethod = UrlPolicyLoadingMethod(uri)
 
@@ -125,9 +125,9 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
 
     override fun onShowOptOutSelected(): Unit = showSettings()
 
-    override fun onError() = showError()
+    override fun onError(): Unit = showError()
 
-    override fun onFinishedLoading() = showWebView()
+    override fun onFinishedLoading(): Unit = showWebView()
 
     private fun showError() {
         webView.visibility = View.INVISIBLE
@@ -144,7 +144,7 @@ class PolicyFragment : BasePolicyFragment(), PolicyWebViewClient.Callback {
         view.setOnClickListener { startLoadingContent() }
     }
 
-    companion object {
+    internal companion object {
         private const val ARG_TITLE = "title"
         private const val ARG_URI = "uri"
         private const val ARG_SHOW_SETTINGS = "show_settings"

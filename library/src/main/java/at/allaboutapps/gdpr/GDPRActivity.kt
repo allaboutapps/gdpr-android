@@ -10,12 +10,11 @@ import android.widget.Button
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import at.allaboutapps.gdpr.policy.PolicyFragment
 import at.allaboutapps.gdpr.services.TextResource
 
-class GDPRActivity : AppCompatActivity() {
+public class GDPRActivity : AppCompatActivity() {
 
     private var tosMode: Int = SettingsViewModel.TOS_HIDE
     private var requireToS: Boolean = false
@@ -92,10 +91,9 @@ class GDPRActivity : AppCompatActivity() {
 
         if (requireToS) {
             buttonConfirm.isEnabled = (viewModel.tosAccepted.value ?: false)
-            viewModel.tosAccepted.observe(
-                this,
-                Observer { accepted -> buttonConfirm.isEnabled = accepted }
-            )
+            viewModel.tosAccepted.observe(this) { accepted ->
+                buttonConfirm.isEnabled = accepted
+            }
         } else {
             buttonConfirm.isEnabled = true
         }
@@ -159,7 +157,7 @@ class GDPRActivity : AppCompatActivity() {
     }
     //endregion
 
-    companion object {
+    internal companion object {
         private const val EXTRA_SETTINGS = "settings"
         private const val EXTRA_URL = "url"
         private const val EXTRA_POLICY_TYPE = "policy"

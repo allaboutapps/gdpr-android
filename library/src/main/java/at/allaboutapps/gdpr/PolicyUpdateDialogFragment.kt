@@ -8,11 +8,11 @@ import androidx.appcompat.app.AlertDialog
 /**
  * Dialog prompt to inform the user of a changed policy. The user can read more or accept the updated terms.
  */
-open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
+public open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = false
-        return AlertDialog.Builder(requireContext(), arguments!!.getInt(ARG_STYLE))
+        return AlertDialog.Builder(requireContext(), requireArguments().getInt(ARG_STYLE))
             .setCancelable(false)
             .setTitle(R.string.gdpr_sdk__popup_title)
             .setMessage(R.string.gdpr_sdk__popup_message)
@@ -25,7 +25,7 @@ open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
     /**
      * Update / Modify the dialog to your needs. Title, message, neutral, and positive button are already set.
      */
-    open fun onPrepareDialogBuilder(builder: AlertDialog.Builder) = Unit
+    public open fun onPrepareDialogBuilder(builder: AlertDialog.Builder) = Unit
 
     private fun showPolicy() {
         startActivity(GDPRPolicyManager.instance().newSettingsIntent(true))
@@ -45,28 +45,29 @@ open class PolicyUpdateDialogFragment : androidx.fragment.app.DialogFragment() {
     /**
      * Show dialog if it is not already showing.
      */
-    fun show(fragmentManager: androidx.fragment.app.FragmentManager) {
+    public fun show(fragmentManager: androidx.fragment.app.FragmentManager) {
         if (fragmentManager.findFragmentByTag(TAG) == null) {
             show(fragmentManager, TAG)
         }
     }
 
-    companion object {
+    public companion object {
         private const val TAG = "${BuildConfig.LIBRARY_PACKAGE_NAME}.GDPR_DIALOG"
         private const val ARG_STYLE = "${BuildConfig.LIBRARY_PACKAGE_NAME}.style"
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(@StyleRes style: Int = 0) = PolicyUpdateDialogFragment().addArguments {
-            putInt(ARG_STYLE, style)
-        }
+        public fun newInstance(@StyleRes style: Int = 0) =
+            PolicyUpdateDialogFragment().addArguments {
+                putInt(ARG_STYLE, style)
+            }
 
         private inline fun <T : PolicyUpdateDialogFragment> T.addArguments(
             crossinline block: Bundle.() -> Unit
         ): T = this.apply { arguments = (arguments ?: Bundle()).also(block) }
     }
 
-    interface PolicyAcceptedCallback {
-        fun onPolicyAccepted()
+    public interface PolicyAcceptedCallback {
+        public fun onPolicyAccepted()
     }
 }

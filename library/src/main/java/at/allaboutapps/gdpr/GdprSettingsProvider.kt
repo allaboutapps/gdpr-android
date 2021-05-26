@@ -13,7 +13,7 @@ import android.database.MatrixCursor
 import android.net.Uri
 import androidx.annotation.IdRes
 
-class GdprSettingsProvider : ContentProvider() {
+public class GdprSettingsProvider : ContentProvider() {
 
     private lateinit var settings: SharedPreferences
 
@@ -27,7 +27,7 @@ class GdprSettingsProvider : ContentProvider() {
         return true
     }
 
-    override fun getType(uri: Uri) =
+    override fun getType(uri: Uri): String =
         ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + AUTHORITY + ".item"
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
@@ -117,7 +117,8 @@ class GdprSettingsProvider : ContentProvider() {
         throw UnsupportedOperationException()
     }
 
-    class GdprPreferences internal constructor(private val context: Context) : SharedPreferences {
+    internal class GdprPreferences internal constructor(private val context: Context) :
+        SharedPreferences {
 
         fun getNameForId(@IdRes serviceId: Int): String =
             context.resources.getResourceEntryName(serviceId)
@@ -216,8 +217,8 @@ class GdprSettingsProvider : ContentProvider() {
         }
     }
 
-    companion object {
-        const val SERVICE_PREFIX = "SERVICE_"
+    public companion object {
+        public const val SERVICE_PREFIX = "SERVICE_"
 
         private const val PREFERENCE_NAME = BuildConfig.LIBRARY_PACKAGE_NAME + ".GDPR"
 
@@ -234,8 +235,8 @@ class GdprSettingsProvider : ContentProvider() {
 
         private lateinit var AUTHORITY: String
 
-        lateinit var BASE_URI: Uri
-        lateinit var SERVICES_URI: Uri
+        private lateinit var BASE_URI: Uri
+        private lateinit var SERVICES_URI: Uri
 
         private lateinit var matcher: UriMatcher
         private var isInitialized = false

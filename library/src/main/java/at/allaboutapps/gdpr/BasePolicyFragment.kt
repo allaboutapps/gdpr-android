@@ -1,8 +1,8 @@
 package at.allaboutapps.gdpr
 
-abstract class BasePolicyFragment : androidx.fragment.app.Fragment() {
+public abstract class BasePolicyFragment : androidx.fragment.app.Fragment() {
 
-    open fun onBackPressed(): Boolean = false
+    internal open fun onBackPressed(): Boolean = false
 
-    abstract fun getTitle(): String
+    internal abstract fun getTitle(): String
 }
