@@ -19,7 +19,7 @@ internal class ServiceAdapter(
     private val viewModel: SettingsViewModel,
     private val showTos: () -> Unit,
     private val showPrivacyPolicy: (showSettings: Boolean) -> Unit
-) : ListAdapter<ListItem, RecyclerView.ViewHolder>(Callback()) {
+) : ListAdapter<ListItem, ServiceAdapter.Holder>(Callback()) {
 
     class Callback : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean =
@@ -29,28 +29,72 @@ internal class ServiceAdapter(
             oldItem == newItem
     }
 
-    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val buttonPrivacyPolicy: View = view.findViewById(R.id.action_privacy)
+    internal abstract class Holder(view: View) : RecyclerView.ViewHolder(view) {
+        abstract fun bind(item: ListItem)
     }
 
-    class PrivacyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val buttonPrivacyPolicy: View = view.findViewById(R.id.action_privacy)
+    private inner class HeaderViewHolder(view: View) : Holder(view) {
+        private val buttonPrivacyPolicy: View = view.findViewById(R.id.action_privacy)
+
+        override fun bind(item: ListItem) {
+            buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy(false) }
+            itemView.findViewById<View>(R.id.action_allow_all).setOnClickListener {
+                viewModel.enableAll()
+            }
+        }
     }
 
-    class TOSViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val checkbox: CheckBox = view.findViewById(R.id.checkbox_tos_accepted)
-        val buttonTos: View = view.findViewById(R.id.action_tos)
+    private inner class PrivacyViewHolder(view: View) : Holder(view) {
+        private val buttonPrivacyPolicy: View = view.findViewById(R.id.action_privacy)
+
+        override fun bind(item: ListItem) {
+            buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy(true) }
+        }
     }
 
-    class TOSInfoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val buttonTos: View = view.findViewById(R.id.action_tos)
+    private inner class TOSViewHolder(view: View) : Holder(view) {
+        private val checkbox: CheckBox = view.findViewById(R.id.checkbox_tos_accepted)
+        private val buttonTos: View = view.findViewById(R.id.action_tos)
+
+        override fun bind(item: ListItem) {
+            buttonTos.setOnClickListener { showTos() }
+            checkbox.setOnCheckedChangeListener(null)
+            checkbox.isChecked = viewModel.tosAccepted.value ?: false
+            checkbox.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.setTOSAccepted(isChecked)
+            }
+        }
     }
 
-    class ServiceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private inner class TOSInfoViewHolder(view: View) : Holder(view) {
+        private val buttonTos: View = view.findViewById(R.id.action_tos)
 
-        val switch: SwitchCompat = view.findViewById(R.id.title_switch)
-        val description: TextView = view.findViewById(R.id.description)
-        val clearButton: Button = view.findViewById(R.id.action_delete)
+        override fun bind(item: ListItem) {
+            buttonTos.setOnClickListener { showTos() }
+        }
+    }
+
+    private inner class ServiceViewHolder(view: View) : Holder(view) {
+        private val switch: SwitchCompat = view.findViewById(R.id.title_switch)
+        private val description: TextView = view.findViewById(R.id.description)
+        private val clearButton: Button = view.findViewById(R.id.action_delete)
+
+        override fun bind(item: ListItem) {
+            val service = item as ListItem.Service
+            switch.setText(service.name)
+            switch.setOnCheckedChangeListener(null)
+            switch.isChecked = service.enabled
+            switch.setOnCheckedChangeListener { _, isChecked ->
+                viewModel.setEnabled(service.id, isChecked)
+            }
+
+            description.setText(service.description)
+            description.visibility =
+                if (description.text.isEmpty()) View.GONE else View.VISIBLE
+
+            clearButton.visibility = if (service.canClear) View.VISIBLE else View.GONE
+            clearButton.setOnClickListener { viewModel.clearService(service.id) }
+        }
     }
 
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
@@ -61,77 +105,29 @@ internal class ServiceAdapter(
         else -> SERVICE
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        return when (viewType) {
-            HEADER -> {
-                val view =
-                    inflater.inflate(R.layout.gdpr_sdk__item_services_header, parent, false)
-                HeaderViewHolder(view)
-            }
-            TOS -> {
-                val view =
-                    inflater.inflate(R.layout.gdpr_sdk__item_terms_of_service, parent, false)
-                TOSViewHolder(view)
-            }
-            TOS_INFO -> {
-                val view =
-                    inflater.inflate(R.layout.gdpr_sdk__item_terms_of_service_info, parent, false)
-                TOSInfoViewHolder(view)
-            }
-            PRIVACY -> {
-                val view =
-                    inflater.inflate(R.layout.gdpr_sdk__policy_item_privacy_notice, parent, false)
-                PrivacyViewHolder(view)
-            }
-            else -> {
-                val view = inflater.inflate(R.layout.gdpr_sdk__item_service, parent, false)
-                ServiceViewHolder(view)
-            }
+
+        val (layoutResId, holder) = when (viewType) {
+            HEADER ->
+                R.layout.gdpr_sdk__item_services_header to ::HeaderViewHolder
+            TOS ->
+                R.layout.gdpr_sdk__item_terms_of_service to ::TOSViewHolder
+            TOS_INFO ->
+                R.layout.gdpr_sdk__item_terms_of_service_info to ::TOSInfoViewHolder
+            PRIVACY ->
+                R.layout.gdpr_sdk__policy_item_privacy_notice to ::PrivacyViewHolder
+            else ->
+                R.layout.gdpr_sdk__item_service to ::ServiceViewHolder
         }
+
+        val view = inflater.inflate(layoutResId, parent, false)
+        return holder(view)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is ServiceViewHolder -> {
-                val service = getItem(position) as ListItem.Service
-                holder.switch.setText(service.name)
-                holder.switch.setOnCheckedChangeListener(null)
-                holder.switch.isChecked = service.enabled
-                holder.switch.setOnCheckedChangeListener { _, isChecked ->
-                    viewModel.setEnabled(service.id, isChecked)
-                }
-
-                holder.description.setText(service.description)
-                holder.description.visibility =
-                    if (holder.description.text.isEmpty()) View.GONE else View.VISIBLE
-
-                holder.clearButton.visibility = if (service.canClear) View.VISIBLE else View.GONE
-                holder.clearButton.setOnClickListener { viewModel.clearService(service.id) }
-            }
-            is PrivacyViewHolder -> {
-                holder.buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy(true) }
-            }
-            is HeaderViewHolder -> {
-                holder.buttonPrivacyPolicy.setOnClickListener { showPrivacyPolicy(false) }
-                holder.itemView.findViewById<View>(R.id.action_allow_all).setOnClickListener {
-                    viewModel.enableAll()
-                }
-            }
-            is TOSViewHolder -> {
-                holder.buttonTos.setOnClickListener { showTos() }
-                holder.checkbox.setOnCheckedChangeListener(null)
-                holder.checkbox.isChecked = viewModel.tosAccepted.value ?: false
-                holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                    viewModel.setTOSAccepted(isChecked)
-                }
-            }
-            is TOSInfoViewHolder -> {
-                holder.buttonTos.setOnClickListener { showTos() }
-            }
-        }
-    }
+    override fun onBindViewHolder(holder: Holder, position: Int) =
+        holder.bind(getItem(position))
 
     companion object {
         const val SERVICE = 1
