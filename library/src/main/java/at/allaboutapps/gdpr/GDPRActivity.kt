@@ -40,6 +40,9 @@ public class GDPRActivity : AppCompatActivity() {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
+        tosMode = intent.getIntExtra(EXTRA_REQUIRE_TOS, SettingsViewModel.TOS_HIDE)
+        requireToS = tosMode == SettingsViewModel.TOS_CONFIRM
+
         if (savedInstanceState == null) {
             val fragment = if (showSettings) {
                 loadSettings()
@@ -75,9 +78,6 @@ public class GDPRActivity : AppCompatActivity() {
     }
 
     private fun loadSettings(): SettingsFragment {
-        tosMode = intent.getIntExtra(EXTRA_REQUIRE_TOS, SettingsViewModel.TOS_HIDE)
-        requireToS = tosMode == SettingsViewModel.TOS_CONFIRM
-
         val showSettings = intent.getBooleanExtra(EXTRA_SHOW_SETTINGS, true)
 
         return SettingsFragment.newInstance(servicesResId, tosMode, showSettings)
