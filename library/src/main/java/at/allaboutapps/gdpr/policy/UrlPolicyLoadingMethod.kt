@@ -20,7 +20,7 @@ internal class UrlPolicyLoadingMethod : PolicyLoadingMethod, Parcelable {
     }
 
     override fun startLoading(webView: WebView) {
-        webView.loadUrl(mUrl)
+        webView.loadUrl(mUrl.toString())
     }
 
     override fun describeContents(): Int {

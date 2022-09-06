@@ -88,7 +88,7 @@ class GDPRActivity : AppCompatActivity() {
         val buttonConfirm = findViewById<Button>(R.id.action_submit)
 
         val factory = ViewModelFactory(servicesResId, this)
-        val viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
+        val viewModel = ViewModelProvider(this, factory)[SettingsViewModel::class.java]
 
         if (requireToS) {
             buttonConfirm.isEnabled = (viewModel.tosAccepted.value ?: false)
